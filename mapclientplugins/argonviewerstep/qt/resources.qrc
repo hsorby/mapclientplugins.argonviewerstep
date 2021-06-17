@@ -1,0 +1,6 @@
+
+<RCC>
+  <qresource prefix="argonviewerstep">
+    <file>images/model-viewer.png</file>
+  </qresource>
+</RCC>
