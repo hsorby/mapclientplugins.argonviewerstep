@@ -2,107 +2,66 @@
 <ui version="4.0">
  <class>ArgonViewerWidget</class>
  <widget class="QWidget" name="ArgonViewerWidget">
-   <layout class="QHBoxLayout" name="horizontalLayout">
-    <property name="leftMargin">
-     <number>0</number>
-    </property>
-    <property name="topMargin">
-     <number>0</number>
-    </property>
-    <property name="rightMargin">
-     <number>0</number>
-    </property>
-    <property name="bottomMargin">
-     <number>0</number>
-    </property>
-    <item>
-     <widget class="QStackedWidget" name="viewStackedWidget"/>
-    </item>
-   <item>
-    <widget class="QPushButton" name="pushButtonDone">
-     <property name="text">
-      <string>Done</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>328</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>908</width>
+    <height>833</height>
+   </rect>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
       <item>
-    <widget class="SceneviewerWidget" name="sceneviewerwidget" native="true">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-       <horstretch>1</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>GroupBox</string>
      </property>
+     <widget class="QPushButton" name="pushButtonAddSceneEditor">
+      <property name="geometry">
+       <rect>
+        <x>-20</x>
+        <y>40</y>
+        <width>91</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Add Scene Editor</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButtonAddSceneviewerEditor">
+      <property name="geometry">
+       <rect>
+        <x>-30</x>
+        <y>80</y>
+        <width>118</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Add Scene View Editor</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButtonDone">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>160</y>
+        <width>75</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Done</string>
+      </property>
+     </widget>
     </widget>
    </item>
-   </layout>
-  </widget>
-
-   <customwidgets>
-  <customwidget>
-   <class>SceneviewerWidget</class>
-   <extends>QWidget</extends>
-   <header>opencmiss/zincwidgets/sceneviewerwidget.h</header>
-   <container>1</container>
-  </customwidget>
-  <!-- <customwidget>
-   <class>FieldChooserWidget</class>
-   <extends>QComboBox</extends>
-   <header>opencmiss/zincwidgets/fieldchooserwidget.h</header>
-  </customwidget> -->
- </customwidgets>
-<!-- 
-
-  <action name="action_RegionEditor">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Region Editor</string>
-   </property>
-  </action>
-
-  <action name="action_SceneEditor">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Scene Editor</string>
-   </property>
-  </action>
-
-  <action name="action_SpectrumEditor">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Spectrum Editor</string>
-   </property>
-  </action> -->
-
- <!-- </widget> -->
+   <item>
+    <widget class="QStackedWidget" name="viewStackedWidget"/>
+   </item>
+  </layout>
+ </widget>
  <resources/>
  <connections/>
 </ui>

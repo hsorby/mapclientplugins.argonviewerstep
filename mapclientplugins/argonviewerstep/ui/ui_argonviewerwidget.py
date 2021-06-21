@@ -12,39 +12,32 @@ from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
-from opencmiss.zincwidgets.sceneviewerwidget import SceneviewerWidget
-
 
 class Ui_ArgonViewerWidget(object):
     def setupUi(self, ArgonViewerWidget):
         if not ArgonViewerWidget.objectName():
             ArgonViewerWidget.setObjectName(u"ArgonViewerWidget")
-        self.horizontalLayout = QHBoxLayout(ArgonViewerWidget)
-        self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
+        ArgonViewerWidget.resize(908, 833)
+        self.verticalLayout = QVBoxLayout(ArgonViewerWidget)
+        self.verticalLayout.setObjectName(u"verticalLayout")
+        self.groupBox = QGroupBox(ArgonViewerWidget)
+        self.groupBox.setObjectName(u"groupBox")
+        self.pushButtonAddSceneEditor = QPushButton(self.groupBox)
+        self.pushButtonAddSceneEditor.setObjectName(u"pushButtonAddSceneEditor")
+        self.pushButtonAddSceneEditor.setGeometry(QRect(-20, 40, 91, 23))
+        self.pushButtonAddSceneviewerEditor = QPushButton(self.groupBox)
+        self.pushButtonAddSceneviewerEditor.setObjectName(u"pushButtonAddSceneviewerEditor")
+        self.pushButtonAddSceneviewerEditor.setGeometry(QRect(-30, 80, 118, 23))
+        self.pushButtonDone = QPushButton(self.groupBox)
+        self.pushButtonDone.setObjectName(u"pushButtonDone")
+        self.pushButtonDone.setGeometry(QRect(0, 160, 75, 23))
+
+        self.verticalLayout.addWidget(self.groupBox)
+
         self.viewStackedWidget = QStackedWidget(ArgonViewerWidget)
         self.viewStackedWidget.setObjectName(u"viewStackedWidget")
 
-        self.horizontalLayout.addWidget(self.viewStackedWidget)
-
-        self.pushButtonDone = QPushButton(ArgonViewerWidget)
-        self.pushButtonDone.setObjectName(u"pushButtonDone")
-
-        self.horizontalLayout.addWidget(self.pushButtonDone)
-
-        self.verticalSpacer = QSpacerItem(20, 328, QSizePolicy.Minimum, QSizePolicy.Expanding)
-
-        self.horizontalLayout.addItem(self.verticalSpacer)
-
-        self.sceneviewerwidget = SceneviewerWidget(ArgonViewerWidget)
-        self.sceneviewerwidget.setObjectName(u"sceneviewerwidget")
-        sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(1)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.sceneviewerwidget.sizePolicy().hasHeightForWidth())
-        self.sceneviewerwidget.setSizePolicy(sizePolicy)
-
-        self.horizontalLayout.addWidget(self.sceneviewerwidget)
+        self.verticalLayout.addWidget(self.viewStackedWidget)
 
 
         self.retranslateUi(ArgonViewerWidget)
@@ -53,6 +46,9 @@ class Ui_ArgonViewerWidget(object):
     # setupUi
 
     def retranslateUi(self, ArgonViewerWidget):
+        self.groupBox.setTitle(QCoreApplication.translate("ArgonViewerWidget", u"GroupBox", None))
+        self.pushButtonAddSceneEditor.setText(QCoreApplication.translate("ArgonViewerWidget", u"Add Scene Editor", None))
+        self.pushButtonAddSceneviewerEditor.setText(QCoreApplication.translate("ArgonViewerWidget", u"Add Scene View Editor", None))
         self.pushButtonDone.setText(QCoreApplication.translate("ArgonViewerWidget", u"Done", None))
         pass
     # retranslateUi
