@@ -2,7 +2,6 @@ from PySide2 import QtCore, QtWidgets
 
 from mapclientplugins.argonviewerstep.ui.ui_argonviewerwidget import Ui_ArgonViewerWidget
 from opencmiss.zincwidgets.regioneditorwidget import RegionEditorWidget
-from opencmiss.zincwidgets.modelsourceseditorwidget import ModelSourcesEditorWidget
 from opencmiss.zincwidgets.sceneviewereditorwidget import SceneviewerEditorWidget
 from opencmiss.zincwidgets.sceneviewerwidget import SceneviewerWidget
 from opencmiss.zincwidgets.sceneeditorwidget import SceneEditorWidget
@@ -25,14 +24,11 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
         self._visualisation_view_ready = False
 
         self._view_states = {self._sceneviewerwidget: ''}
-        # self._view_states[self._problem_view] = ''
-        # self._view_states[self._simulation_view] = ''
 
         view_list = [self._sceneviewerwidget]
 
         self._location = None  # The last location/directory used by the application
         self._current_view = None
-
 
         self._sceneviewerwidget.setContext(model.getContext())
         self._model = model
@@ -41,42 +37,61 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
 
         self._toolbar = self._ui.toolBar
 
-        # dockLayout = QtWidgets.QVBoxLayout()
-        # dockLayout.setMenuBar(tb)
-        # dockContent = QtWidgets.QWidget()
-        # dockContent.setLayout(dockLayout)
-        # view_list.append(dockContent)
-        # self._ui.verticalLayout.addWidget(self._toolbar)
-
-        # yourDockWidget.setWidget(dockContent);
+        self._makeConnections()
+        self._setupEditors()
+        self._registerEditors()
+        self._setupViews(view_list)
+        self._addDockWidgets()
+        self._onDocumentChanged()
 
         self._callback = None
 
-        self._makeConnections()
-        self._setupEditors()
+    def _regionChange(self, changedRegion, treeChange):
+        """
+        Notifies sceneviewer if affected by tree change i.e. needs new scene.
+        :param changedRegion: The top region changed
+        :param treeChange: True if structure of tree, or zinc objects reconstructed
+        """
+        # following may need changing once sceneviewer can look at sub scenes, since resets to root scene:
+        if treeChange and (changedRegion is self._model.getDocument().getRootRegion()):
+            zincRootRegion = changedRegion.getZincRegion()
+            self._sceneviewerwidget.getSceneviewer().setScene(zincRootRegion.getScene())
 
-        self._registerEditors()
+    def _onDocumentChanged(self):
+        document = self._model.getDocument()
+        rootRegion = document.getRootRegion()
+        rootRegion.connectRegionChange(self._regionChange)
 
-        self._setupViews(view_list)
-        # self._setupOtherWindows()
+        # need to pass new Zinc context to dialogs and widgets using global modules
+        zincContext = document.getZincContext()
+        self._sceneviewerwidget.setContext(zincContext)
+        # self._simulation_view.setZincContext(zincContext)
+        self.dockWidgetContentsSpectrumEditor.setSpectrums(document.getSpectrums())
+        self.dockWidgetContentsTessellationEditor.setZincContext(zincContext)
+        self.dockWidgetContentsTimeEditor.setZincContext(zincContext)
+        # self._snapshot_dialog.setZincContext(zincContext)
 
-        # self._registerOtherWindows()
+        # need to pass new root region to the following
+        self.dockWidgetContentsRegionEditor.setRootRegion(rootRegion)
 
-        # print(self.findMainWindow())
-        self._addDockWidgets()
+        # need to pass new scene to the following
+        zincRootRegion = rootRegion.getZincRegion()
+        scene = zincRootRegion.getScene()
+        self.dockWidgetContentsSceneEditor.setScene(scene)
+        self.dockWidgetContentsFieldEditor.setFieldmodule(zincRootRegion.getFieldmodule())
+        self.dockWidgetContentsFieldEditor.setArgonRegion(rootRegion)
+        self.dockWidgetContentsFieldEditor.setTimekeeper(zincContext.getTimekeepermodule().getDefaultTimekeeper())
 
-        # Set the undo redo stack state
-        # self._undoRedoStack.push(CommandEmpty())
-        # self._undoRedoStack.clear()
+        if self._visualisation_view_ready:
+            self._restoreSceneviewerState()
+        else:
+            self._visualisation_view_state_update_pending = True
 
-        # self._updateUi()
-
-        # self._readSettings()
-
-        self._dock_widgets = []
-
-    def getName(self):
-        return self._name
+        # project = document.getProject()
+        # index = self._model.getProjectModel().getIndex(project)
+        # self._problem_view.setCurrentIndex(index.row())
+        # self._simulation_view.setCurrentIndex(index.row())
+        # self._problem_view.setProblem(project.getProblem())
 
     def setZincContext(self, zincContext):
         raise NotImplementedError()
@@ -114,17 +129,17 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
 
     def _makeConnections(self):
         self._ui.pushButtonDone.clicked.connect(self._doneButtonClicked)
-        self._sceneviewerwidget.graphicsInitialized.connect(self._visualisationViewReady)        
+        self._sceneviewerwidget.graphicsInitialized.connect(self._visualisationViewReady)
+        # self._model.documentChanged.connect(self._onDocumentChanged)        
 
     def _addDockWidgets(self):
+        self.addDockWidget(QtCore.Qt.DockWidgetArea(QtCore.Qt.LeftDockWidgetArea), self.dockWidgetRegionEditor)
         self.addDockWidget(QtCore.Qt.DockWidgetArea(QtCore.Qt.LeftDockWidgetArea), self.dockWidgetTessellationEditor)
+        self.addDockWidget(QtCore.Qt.DockWidgetArea(QtCore.Qt.BottomDockWidgetArea), self.dockWidgetTimeEditor)
         self.tabifyDockWidget(self.dockWidgetTessellationEditor, self.dockWidgetSpectrumEditor)
         self.tabifyDockWidget(self.dockWidgetSpectrumEditor, self.dockWidgetSceneEditor)
-        self.tabifyDockWidget(self.dockWidgetSceneEditor, self.dockWidgetModelSourcesEditor)
-        self.tabifyDockWidget(self.dockWidgetModelSourcesEditor, self.dockWidgetRegionEditor)
-        self.tabifyDockWidget(self.dockWidgetRegionEditor, self.dockWidgetSceneviewerEditor)
+        self.tabifyDockWidget(self.dockWidgetSceneEditor, self.dockWidgetSceneviewerEditor)
         self.tabifyDockWidget(self.dockWidgetSceneviewerEditor, self.dockWidgetFieldEditor)
-        self.addDockWidget(QtCore.Qt.DockWidgetArea(QtCore.Qt.BottomDockWidgetArea), self.dockWidgetTimeEditor)
 
     def _setupEditors(self):
 
@@ -135,14 +150,6 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
         self.dockWidgetContentsRegionEditor.setObjectName("dockWidgetContentsRegionEditor")
         self.dockWidgetRegionEditor.setWidget(self.dockWidgetContentsRegionEditor)
         self.dockWidgetRegionEditor.setHidden(True)
-
-        self.dockWidgetModelSourcesEditor = QtWidgets.QDockWidget(self)
-        self.dockWidgetModelSourcesEditor.setWindowTitle('Model Sources Editor')
-        self.dockWidgetModelSourcesEditor.setObjectName("dockWidgetModelSourcesEditor")
-        self.dockWidgetContentsModelSourcesEditor = ModelSourcesEditorWidget()
-        self.dockWidgetContentsModelSourcesEditor.setObjectName("dockWidgetContentsModelSourcesEditor")
-        self.dockWidgetModelSourcesEditor.setWidget(self.dockWidgetContentsModelSourcesEditor)
-        self.dockWidgetModelSourcesEditor.setHidden(True)
 
         self.dockWidgetSceneEditor = QtWidgets.QDockWidget(self)
         self.dockWidgetSceneEditor.setWindowTitle('Scene Editor')
@@ -195,7 +202,6 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
 
     def _registerEditors(self):
         self._registerEditor(self.dockWidgetRegionEditor)
-        self._registerEditor(self.dockWidgetModelSourcesEditor)
         self._registerEditor(self.dockWidgetSceneEditor)
         self._registerEditor(self.dockWidgetSceneviewerEditor)
         self._registerEditor(self.dockWidgetSpectrumEditor)
@@ -219,27 +225,16 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
         return action
 
     def _setupViews(self, views):
-        action_group = QtWidgets.QActionGroup(self)
         zincContext = self._model.getContext()
         print(zincContext)
         for v in views:
             self._ui.viewStackedWidget.addWidget(v)
             v.setContext(zincContext)
 
-            # action_view = QtWidgets.QAction(v.getName(), self)
-            # action_view.setData(v)
-            # action_view.setCheckable(True)
-            # action_view.setActionGroup(action_group)
-            # action_view.triggered.connect(self._viewTriggered)
-            # self._toolbar.addAction(action_view)
-
-        self._toolbar.addSeparator()
-
     def _visualisationViewReady(self):
         self._visualisation_view_ready = True
         if self._visualisation_view_state_update_pending:
             self._restoreSceneviewerState()
-
 
     def _restoreSceneviewerState(self):
         # document = self._model.getDocument()
@@ -253,41 +248,6 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
 
     def _addSceneViewerEditorButtonClicked(self):
         self.dockWidgetSceneviewerEditor.setHidden(False)
-
-    def _preChangeView(self):
-        current_view = self._ui.viewStackedWidget.currentWidget()
-        dependent_editors = current_view.getDependentEditors()
-        view_state = self.saveState(VERSION_MAJOR)
-        self._view_states[current_view] = view_state
-
-        for ed in dependent_editors:
-            ed.setHidden(True)
-
-        action_name = getEditorMenuName(current_view)
-        action = self._getEditorAction(action_name)
-        if action is not None:
-            menu = action.menu()
-            menu.setEnabled(False)
-
-    def _changeView(self, view):
-        self._ui.viewStackedWidget.setCurrentWidget(view)
-
-    def _postChangeView(self):
-        current_view = self._ui.viewStackedWidget.currentWidget()
-        view_state = self._view_states[current_view]
-        # self.restoreState(view_state, VERSION_MAJOR)
-
-        action_name = getEditorMenuName(current_view)
-        action = self._getEditorAction(action_name)
-        if action is not None:
-            menu = action.menu()
-            menu.setEnabled(True)
-
-    def _viewTriggered(self):
-        v = self.sender().data()
-        self._preChangeView()
-        self._changeView(v)
-        self._postChangeView()
 
     def registerDoneExecution(self, callback):
         self._callback = callback

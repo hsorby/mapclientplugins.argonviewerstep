@@ -96,6 +96,9 @@ class ArgonViewerModel(object):
             return self._document.getZincContext()
         return None
 
+    def getDocument(self):
+        return self._document
+        
     def _initGraphicsModules(self):
         context = self.getContext()
         self._materialmodule = context.getMaterialmodule()
