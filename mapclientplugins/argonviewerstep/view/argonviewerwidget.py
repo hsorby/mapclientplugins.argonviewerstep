@@ -87,12 +87,6 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
         else:
             self._visualisation_view_state_update_pending = True
 
-        # project = document.getProject()
-        # index = self._model.getProjectModel().getIndex(project)
-        # self._problem_view.setCurrentIndex(index.row())
-        # self._simulation_view.setCurrentIndex(index.row())
-        # self._problem_view.setProblem(project.getProblem())
-
     def setZincContext(self, zincContext):
         raise NotImplementedError()
 
@@ -133,13 +127,13 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
         # self._model.documentChanged.connect(self._onDocumentChanged)        
 
     def _addDockWidgets(self):
-        self.addDockWidget(QtCore.Qt.DockWidgetArea(QtCore.Qt.LeftDockWidgetArea), self.dockWidgetRegionEditor)
         self.addDockWidget(QtCore.Qt.DockWidgetArea(QtCore.Qt.LeftDockWidgetArea), self.dockWidgetTessellationEditor)
         self.addDockWidget(QtCore.Qt.DockWidgetArea(QtCore.Qt.BottomDockWidgetArea), self.dockWidgetTimeEditor)
         self.tabifyDockWidget(self.dockWidgetTessellationEditor, self.dockWidgetSpectrumEditor)
         self.tabifyDockWidget(self.dockWidgetSpectrumEditor, self.dockWidgetSceneEditor)
         self.tabifyDockWidget(self.dockWidgetSceneEditor, self.dockWidgetSceneviewerEditor)
         self.tabifyDockWidget(self.dockWidgetSceneviewerEditor, self.dockWidgetFieldEditor)
+        self.tabifyDockWidget(self.dockWidgetFieldEditor, self.dockWidgetRegionEditor)
 
     def _setupEditors(self):
 
@@ -237,10 +231,10 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
             self._restoreSceneviewerState()
 
     def _restoreSceneviewerState(self):
-        # document = self._model.getDocument()
-        # sceneviewer_state = document.getSceneviewer().serialize()
-        # self._sceneviewerwidget.setSceneviewerState(sceneviewer_state)
-        self.dockWidgetContentsSceneviewerEditor.setSceneviewer(self._sceneviewerwidget)
+        document = self._model.getDocument()
+        sceneviewer_state = document.getSceneviewer().serialize()
+        self._model.setSceneviewerState(self._sceneviewerwidget.getSceneviewer(), sceneviewer_state)
+        self.dockWidgetContentsSceneviewerEditor.setSceneviewer(self._sceneviewerwidget.getSceneviewer())
         self._visualisation_view_state_update_pending = False
 
     def _addSceneEditorButtonClicked(self):

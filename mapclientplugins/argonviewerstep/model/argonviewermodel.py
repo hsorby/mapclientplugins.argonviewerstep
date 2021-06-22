@@ -115,6 +115,13 @@ class ArgonViewerModel(object):
         with open(self._getDisplaySettingsFileName(), "w") as f:
             f.write(json.dumps(self._settings, sort_keys=False, indent=4))
 
+    def setSceneviewerState(self, view, state):
+        view.readDescription(json.dumps(state))
+
+    def getSceneviewerState(self, view):
+        d = json.loads(view.writeDescription())
+        return d
+
     def done(self):
         self._saveSettings()
 
