@@ -18,27 +18,24 @@ class Ui_ArgonViewerWidget(object):
         if not ArgonViewerWidget.objectName():
             ArgonViewerWidget.setObjectName(u"ArgonViewerWidget")
         ArgonViewerWidget.resize(908, 833)
-        self.verticalLayout = QVBoxLayout(ArgonViewerWidget)
+        self.toolBar = QToolBar(ArgonViewerWidget)
+        self.toolBar.setObjectName(u"toolBar")
+        ArgonViewerWidget.addToolBar(self.toolBar)
+        self.centralwidget = QWidget(ArgonViewerWidget)
+        self.centralwidget.setObjectName(u"centralwidget")
+        self.verticalLayout = QVBoxLayout(self.centralwidget)
         self.verticalLayout.setObjectName(u"verticalLayout")
-        self.groupBox = QGroupBox(ArgonViewerWidget)
-        self.groupBox.setObjectName(u"groupBox")
-        self.pushButtonAddSceneEditor = QPushButton(self.groupBox)
-        self.pushButtonAddSceneEditor.setObjectName(u"pushButtonAddSceneEditor")
-        self.pushButtonAddSceneEditor.setGeometry(QRect(-20, 40, 91, 23))
-        self.pushButtonAddSceneviewerEditor = QPushButton(self.groupBox)
-        self.pushButtonAddSceneviewerEditor.setObjectName(u"pushButtonAddSceneviewerEditor")
-        self.pushButtonAddSceneviewerEditor.setGeometry(QRect(-30, 80, 118, 23))
-        self.pushButtonDone = QPushButton(self.groupBox)
-        self.pushButtonDone.setObjectName(u"pushButtonDone")
-        self.pushButtonDone.setGeometry(QRect(0, 160, 75, 23))
-
-        self.verticalLayout.addWidget(self.groupBox)
-
-        self.viewStackedWidget = QStackedWidget(ArgonViewerWidget)
+        self.viewStackedWidget = QStackedWidget(self.centralwidget)
         self.viewStackedWidget.setObjectName(u"viewStackedWidget")
 
         self.verticalLayout.addWidget(self.viewStackedWidget)
 
+        self.pushButtonDone = QPushButton(self.centralwidget)
+        self.pushButtonDone.setObjectName(u"pushButtonDone")
+
+        self.verticalLayout.addWidget(self.pushButtonDone)
+
+        ArgonViewerWidget.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(ArgonViewerWidget)
 
@@ -46,9 +43,6 @@ class Ui_ArgonViewerWidget(object):
     # setupUi
 
     def retranslateUi(self, ArgonViewerWidget):
-        self.groupBox.setTitle(QCoreApplication.translate("ArgonViewerWidget", u"GroupBox", None))
-        self.pushButtonAddSceneEditor.setText(QCoreApplication.translate("ArgonViewerWidget", u"Add Scene Editor", None))
-        self.pushButtonAddSceneviewerEditor.setText(QCoreApplication.translate("ArgonViewerWidget", u"Add Scene View Editor", None))
         self.pushButtonDone.setText(QCoreApplication.translate("ArgonViewerWidget", u"Done", None))
         pass
     # retranslateUi

@@ -1,4 +1,4 @@
-from PySide2 import QtWidgets
+from PySide2 import QtCore, QtWidgets
 
 from mapclientplugins.argonviewerstep.ui.ui_argonviewerwidget import Ui_ArgonViewerWidget
 from opencmiss.zincwidgets.regioneditorwidget import RegionEditorWidget
@@ -11,7 +11,7 @@ from opencmiss.zincwidgets.tessellationeditorwidget import TessellationEditorWid
 from opencmiss.zincwidgets.timeeditorwidget import TimeEditorWidget
 from opencmiss.zincwidgets.fieldlisteditorwidget import FieldListEditorWidget
 
-class ArgonViewerWidget(QtWidgets.QWidget):
+class ArgonViewerWidget(QtWidgets.QMainWindow):
 
     def __init__(self, model, parent=None):
         super(ArgonViewerWidget, self).__init__(parent)
@@ -39,26 +39,14 @@ class ArgonViewerWidget(QtWidgets.QWidget):
         # self._scene = self._region.getScene()
         self._sceneviewerwidget.graphicsInitialized.connect(self._graphicsInitialized)
 
-        self._toolbar = QtWidgets.QToolBar()
-        button_action = QtWidgets.QAction("Scene Editor", self)
-        button_action.setStatusTip("Scene Editor")
-        button_action.setCheckable(True)
-        button_action.triggered.connect(self._addSceneEditorButtonClicked)
-        self._toolbar .addAction(button_action)
-
-        addSceneViewerEditor_action = QtWidgets.QAction("Scene Viewer Editor", self)
-        addSceneViewerEditor_action.setStatusTip("Scene Viewer Editor")
-        addSceneViewerEditor_action.triggered.connect(self._addSceneViewerEditorButtonClicked)
-        self._toolbar .addAction(addSceneViewerEditor_action)
+        self._toolbar = self._ui.toolBar
 
         # dockLayout = QtWidgets.QVBoxLayout()
         # dockLayout.setMenuBar(tb)
         # dockContent = QtWidgets.QWidget()
         # dockContent.setLayout(dockLayout)
         # view_list.append(dockContent)
-        self._ui.verticalLayout.addWidget(self._toolbar)
-
-
+        # self._ui.verticalLayout.addWidget(self._toolbar)
 
         # yourDockWidget.setWidget(dockContent);
 
@@ -67,14 +55,15 @@ class ArgonViewerWidget(QtWidgets.QWidget):
         self._makeConnections()
         self._setupEditors()
 
-        # self._registerEditors()
+        self._registerEditors()
 
         self._setupViews(view_list)
         # self._setupOtherWindows()
 
         # self._registerOtherWindows()
 
-        # self._addDockWidgets()
+        # print(self.findMainWindow())
+        self._addDockWidgets()
 
         # Set the undo redo stack state
         # self._undoRedoStack.push(CommandEmpty())
@@ -125,11 +114,9 @@ class ArgonViewerWidget(QtWidgets.QWidget):
 
     def _makeConnections(self):
         self._ui.pushButtonDone.clicked.connect(self._doneButtonClicked)
-        self._ui.pushButtonAddSceneEditor.clicked.connect(self._addSceneEditorButtonClicked)
+        self._sceneviewerwidget.graphicsInitialized.connect(self._visualisationViewReady)        
 
     def _addDockWidgets(self):
-        # self.addDockWidget(QtCore.Qt.DockWidgetArea(QtCore.Qt.LeftDockWidgetArea), self.dockWidgetProblemEditor)
-        # self.addDockWidget(QtCore.Qt.DockWidgetArea(QtCore.Qt.LeftDockWidgetArea), self.dockWidgetSimulationEditor)
         self.addDockWidget(QtCore.Qt.DockWidgetArea(QtCore.Qt.LeftDockWidgetArea), self.dockWidgetTessellationEditor)
         self.tabifyDockWidget(self.dockWidgetTessellationEditor, self.dockWidgetSpectrumEditor)
         self.tabifyDockWidget(self.dockWidgetSpectrumEditor, self.dockWidgetSceneEditor)
@@ -137,8 +124,7 @@ class ArgonViewerWidget(QtWidgets.QWidget):
         self.tabifyDockWidget(self.dockWidgetModelSourcesEditor, self.dockWidgetRegionEditor)
         self.tabifyDockWidget(self.dockWidgetRegionEditor, self.dockWidgetSceneviewerEditor)
         self.tabifyDockWidget(self.dockWidgetSceneviewerEditor, self.dockWidgetFieldEditor)
-        # self.addDockWidget(QtCore.Qt.DockWidgetArea(QtCore.Qt.BottomDockWidgetArea), self.dockWidgetLoggerEditor)
-        self.tabifyDockWidget(self.dockWidgetLoggerEditor, self.dockWidgetTimeEditor)
+        self.addDockWidget(QtCore.Qt.DockWidgetArea(QtCore.Qt.BottomDockWidgetArea), self.dockWidgetTimeEditor)
 
     def _setupEditors(self):
 
@@ -235,6 +221,7 @@ class ArgonViewerWidget(QtWidgets.QWidget):
     def _setupViews(self, views):
         action_group = QtWidgets.QActionGroup(self)
         zincContext = self._model.getContext()
+        print(zincContext)
         for v in views:
             self._ui.viewStackedWidget.addWidget(v)
             v.setContext(zincContext)
@@ -248,6 +235,18 @@ class ArgonViewerWidget(QtWidgets.QWidget):
 
         self._toolbar.addSeparator()
 
+    def _visualisationViewReady(self):
+        self._visualisation_view_ready = True
+        if self._visualisation_view_state_update_pending:
+            self._restoreSceneviewerState()
+
+
+    def _restoreSceneviewerState(self):
+        # document = self._model.getDocument()
+        # sceneviewer_state = document.getSceneviewer().serialize()
+        # self._sceneviewerwidget.setSceneviewerState(sceneviewer_state)
+        self.dockWidgetContentsSceneviewerEditor.setSceneviewer(self._sceneviewerwidget)
+        self._visualisation_view_state_update_pending = False
 
     def _addSceneEditorButtonClicked(self):
         self.dockWidgetSceneEditor.setHidden(False)
