@@ -32,8 +32,6 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
 
         self._sceneviewerwidget.setContext(model.getContext())
         self._model = model
-        # self._scene = self._region.getScene()
-        self._sceneviewerwidget.graphicsInitialized.connect(self._graphicsInitialized)
 
         self._toolbar = self._ui.toolBar
 
@@ -69,7 +67,6 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
         self.dockWidgetContentsSpectrumEditor.setSpectrums(document.getSpectrums())
         self.dockWidgetContentsTessellationEditor.setZincContext(zincContext)
         self.dockWidgetContentsTimeEditor.setZincContext(zincContext)
-        # self._snapshot_dialog.setZincContext(zincContext)
 
         # need to pass new root region to the following
         self.dockWidgetContentsRegionEditor.setRootRegion(rootRegion)
@@ -99,27 +96,6 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
         this view.
         '''
         self._dock_widgets.append(editor)
-
-    def _graphicsInitialized(self):
-        """
-        Callback for when SceneviewerWidget is initialised
-        """
-        self._sceneChanged()
-        sceneviewer = self._sceneviewerwidget.getSceneviewer()
-        if sceneviewer is not None:
-            sceneviewer.setTransparencyMode(sceneviewer.TRANSPARENCY_MODE_SLOW)
-            # self._autoPerturbLines()
-            sceneviewer.viewAll()
-
-    def _sceneChanged(self):
-        """
-        Set custom scene from model.
-        """
-        sceneviewer = self._sceneviewerwidget.getSceneviewer()
-        if sceneviewer is not None:
-            self._model.createGraphics()
-            # sceneviewer.setScene(self._model.getScene())
-            # self._refreshGraphics()
 
     def _makeConnections(self):
         self._ui.pushButtonDone.clicked.connect(self._doneButtonClicked)
@@ -237,14 +213,10 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
         self.dockWidgetContentsSceneviewerEditor.setSceneviewer(self._sceneviewerwidget.getSceneviewer())
         self._visualisation_view_state_update_pending = False
 
-    def _addSceneEditorButtonClicked(self):
-        self.dockWidgetSceneEditor.setHidden(False)
-
-    def _addSceneViewerEditorButtonClicked(self):
-        self.dockWidgetSceneviewerEditor.setHidden(False)
-
     def registerDoneExecution(self, callback):
         self._callback = callback
 
     def _doneButtonClicked(self):
+        self._model.done()
+        # self._ui.dockWidget.setFloating(False)
         self._callback()

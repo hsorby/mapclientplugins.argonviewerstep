@@ -27,35 +27,9 @@ class ArgonViewerModel(object):
         """
         :param location: Path to folder for mapclient step name.
         """
-        # self._fitter = Fitter(inputZincModelFile, inputZincDataFile)
         self._location = os.path.join(location, identifier)
         self._identifier = identifier
         # self._initGraphicsModules()
-        self._settings = {
-            "displayAxes" : True,
-            "displayMarkerDataPoints" : True,
-            "displayMarkerDataNames" : False,
-            "displayMarkerDataProjections" : True,
-            "displayMarkerPoints" : True,
-            "displayMarkerNames" : False,
-            "displayDataPoints" : True,
-            "displayDataProjections" : True,
-            "displayDataProjectionPoints" : True,
-            "displayNodePoints" : False,
-            "displayNodeNumbers" : False,
-            "displayNodeDerivatives" : False,
-            # "displayNodeDerivativeLabels" : nodeDerivativeLabels[0:3],
-            "displayElementNumbers" : False,
-            "displayElementAxes" : False,
-            "displayLines" : True,
-            "displayLinesExterior" : False,
-            "displaySurfaces" : True,
-            "displaySurfacesExterior" : True,
-            "displaySurfacesTranslucent" : True,
-            "displaySurfacesWireframe" : False
-        }
-        # self._loadSettings()
-        # self._fitter.load()
         self._document = ArgonDocument()
         self._document.initialiseVisualisationContents()
         self.load(inputArgonDocFile)
@@ -103,18 +77,6 @@ class ArgonViewerModel(object):
         context = self.getContext()
         self._materialmodule = context.getMaterialmodule()
 
-    def _getFitSettingsFileName(self):
-        return self._location + "-settings.json"
-
-    def _getDisplaySettingsFileName(self):
-        return self._location + "-display-settings.json"
-
-    def _saveSettings(self):
-        with open(self._getFitSettingsFileName(), "w") as f:
-            pass
-        with open(self._getDisplaySettingsFileName(), "w") as f:
-            f.write(json.dumps(self._settings, sort_keys=False, indent=4))
-
     def setSceneviewerState(self, view, state):
         view.readDescription(json.dumps(state))
 
@@ -122,8 +84,22 @@ class ArgonViewerModel(object):
         d = json.loads(view.writeDescription())
         return d
 
+    def getOutputModelFileNameStem(self):
+        return self._location
+
+    def getOutputModelFileName(self):
+        return self._location# + ".argon"
+
+    def save(self):
+        # make model sources relative to current location if possible
+        # note that sources on different windows drives have absolute paths
+        base_path = os.path.dirname(self._location)
+        state = self._document.serialize(base_path)
+        with open(self._location, 'w') as f:
+            f.write(state)
+
     def done(self):
-        self._saveSettings()
+        self.save()
 
     def getIdentifier(self):
         return self._identifier
