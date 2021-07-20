@@ -1,6 +1,7 @@
 from PySide2 import QtCore, QtWidgets
 
 from mapclientplugins.argonviewerstep.ui.ui_argonviewerwidget import Ui_ArgonViewerWidget
+from opencmiss.zincwidgets.materialeditorwidget import MaterialEditorWidget
 from opencmiss.zincwidgets.regioneditorwidget import RegionEditorWidget
 from opencmiss.zincwidgets.sceneviewereditorwidget import SceneviewerEditorWidget
 from opencmiss.zincwidgets.sceneviewerwidget import SceneviewerWidget
@@ -63,10 +64,10 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
         # need to pass new Zinc context to dialogs and widgets using global modules
         zincContext = document.getZincContext()
         self._sceneviewerwidget.setContext(zincContext)
-        # self._simulation_view.setZincContext(zincContext)
         self.dockWidgetContentsSpectrumEditor.setSpectrums(document.getSpectrums())
         self.dockWidgetContentsTessellationEditor.setZincContext(zincContext)
         self.dockWidgetContentsTimeEditor.setZincContext(zincContext)
+        self.dockWidgetContentsMaterialEditor.setZincContext(zincContext)
 
         # need to pass new root region to the following
         self.dockWidgetContentsRegionEditor.setRootRegion(rootRegion)
@@ -78,7 +79,8 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
         self.dockWidgetContentsFieldEditor.setFieldmodule(zincRootRegion.getFieldmodule())
         self.dockWidgetContentsFieldEditor.setArgonRegion(rootRegion)
         self.dockWidgetContentsFieldEditor.setTimekeeper(zincContext.getTimekeepermodule().getDefaultTimekeeper())
-
+        
+        
         if self._visualisation_view_ready:
             self._restoreSceneviewerState()
         else:
@@ -110,8 +112,17 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
         self.tabifyDockWidget(self.dockWidgetSceneEditor, self.dockWidgetSceneviewerEditor)
         self.tabifyDockWidget(self.dockWidgetSceneviewerEditor, self.dockWidgetFieldEditor)
         self.tabifyDockWidget(self.dockWidgetFieldEditor, self.dockWidgetRegionEditor)
+        self.tabifyDockWidget(self.dockWidgetRegionEditor, self.dockWidgetMaterialEditor)
 
     def _setupEditors(self):
+
+        self.dockWidgetMaterialEditor = QtWidgets.QDockWidget(self)
+        self.dockWidgetMaterialEditor.setWindowTitle('Material Editor')
+        self.dockWidgetMaterialEditor.setObjectName("dockWidgetMaterialEditor")
+        self.dockWidgetContentsMaterialEditor = MaterialEditorWidget()
+        self.dockWidgetContentsMaterialEditor.setObjectName("dockWidgetContentsMaterialEditor")
+        self.dockWidgetMaterialEditor.setWidget(self.dockWidgetContentsMaterialEditor)
+        self.dockWidgetMaterialEditor.setHidden(True)
 
         self.dockWidgetRegionEditor = QtWidgets.QDockWidget(self)
         self.dockWidgetRegionEditor.setWindowTitle('Region Editor')
@@ -171,6 +182,7 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
         self.dockWidgetFieldEditor.setHidden(True)
 
     def _registerEditors(self):
+        self._registerEditor(self.dockWidgetMaterialEditor)
         self._registerEditor(self.dockWidgetRegionEditor)
         self._registerEditor(self.dockWidgetSceneEditor)
         self._registerEditor(self.dockWidgetSceneviewerEditor)
@@ -217,6 +229,6 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
         self._callback = callback
 
     def _doneButtonClicked(self):
-        self._model.done()
+        self._model.done(self._sceneviewerwidget.getSceneviewer())
         # self._ui.dockWidget.setFloating(False)
         self._callback()
