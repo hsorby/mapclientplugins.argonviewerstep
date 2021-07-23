@@ -34,6 +34,9 @@ class ArgonViewerModel(object):
         self._document = ArgonDocument()
         self._document.initialiseVisualisationContents()
         self._prefix = "Argon"
+        self._numberOfTimeSteps = 10
+        self._initialTime = 0.0
+        self._finishTime = 1.0
         self.load(inputArgonDocFile)
 
     def load(self, filename):
@@ -101,7 +104,6 @@ class ArgonViewerModel(object):
             f.write(state)
 
     def done(self,view):
-        print("create graphics")
         self.exportViewJson(view)
         self.exportWebGLJson()
         self.save()
@@ -116,17 +118,6 @@ class ArgonViewerModel(object):
         self._settings[graphicsName] = show
         graphics = self.getScene().findGraphicsByName(graphicsName)
         graphics.setVisibilityFlag(show)
-
-    def createGraphics(self):
-        print("create graphics",self._document.getRootRegion().getZincRegion().getScene())
-        streaminformationScene = self.getScene().createStreaminformationScene()
-        print("create graphics",streaminformationScene)
-
-        streaminformationScene.setIOFormat(StreaminformationScene.IO_FORMAT_THREEJS)
-        streaminformationScene.createStreamresourceFile("threejs.json")
-        
-        self.getScene().write(streaminformationScene)
-        print(streaminformationScene)
 
     def getScene(self):
         print("create graphics scene")
@@ -157,10 +148,9 @@ class ArgonViewerModel(object):
         output frames of the deforming heart between time 0 to 1,
         this matches the number of frame we have read in previously
         '''
-        # sceneSR.setNumberOfTimeSteps(self._numberOfTimeSteps)
-        sceneSR.setNumberOfTimeSteps(10)
-        sceneSR.setInitialTime(0.0)
-        sceneSR.setFinishTime(1.0)
+        sceneSR.setNumberOfTimeSteps(self._numberOfTimeSteps)
+        sceneSR.setInitialTime(self._initialTime)
+        sceneSR.setFinishTime(self._finishTime)
         ''' we want the geometries and colours change overtime '''
         sceneSR.setOutputTimeDependentVertices(1)
         sceneSR.setOutputTimeDependentColours(1)
@@ -185,12 +175,8 @@ class ArgonViewerModel(object):
                     IMPORTANT: the replace name here is relative to your html page, so adjust it
                     accordingly.
                     '''
-                    # viewData = "{\"Type\":\"View\", \n \"URL\" : %s}"%(self._prefix + '_view' + '.json')
-                    # buffer += viewData
                     replaceName = '' + self._prefix + '_' + str(j+1) + '.json'
                     old_name = 'memory_resource'+ '_' + str(j+2)
-                    print(buffer)
-                    print(type(buffer))
                     buffer = buffer.replace(old_name, replaceName)
                 viewObj =    {
 	                "Type": "View",
