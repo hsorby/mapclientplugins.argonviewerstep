@@ -1,7 +1,6 @@
 from PySide2 import QtCore, QtWidgets
 
 from mapclientplugins.argonviewerstep.ui.ui_argonviewerwidget import Ui_ArgonViewerWidget
-from opencmiss.zincwidgets.exportwebgldialog import ExportWebGLDialog
 from opencmiss.zincwidgets.materialeditorwidget import MaterialEditorWidget
 from opencmiss.zincwidgets.regioneditorwidget import RegionEditorWidget
 from opencmiss.zincwidgets.sceneviewereditorwidget import SceneviewerEditorWidget
@@ -229,10 +228,5 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
         self._callback = callback
 
     def _doneButtonClicked(self):
-        w = ExportWebGLDialog(self)
-        w.setArgonModel(self._model)
-        result = w.exec_()
-        if result:
-            # self._ui.dockWidget.setFloating(False)
-            self._model.done(self._sceneviewerwidget.getSceneviewer())
-            self._callback()
+        self._model.done()
+        self._callback()
