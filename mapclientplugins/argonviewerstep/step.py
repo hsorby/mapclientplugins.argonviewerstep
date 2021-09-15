@@ -7,7 +7,8 @@ from PySide2 import QtGui
 
 from mapclient.mountpoints.workflowstep import WorkflowStepMountPoint
 from mapclientplugins.argonviewerstep.configuredialog import ConfigureDialog
-
+from mapclientplugins.argonviewerstep.view.argonviewerwidget import ArgonViewerWidget
+from mapclientplugins.argonviewerstep.model.argonviewermodel import ArgonViewerModel
 
 class ArgonViewerStep(WorkflowStepMountPoint):
     """
@@ -24,7 +25,11 @@ class ArgonViewerStep(WorkflowStepMountPoint):
         # Ports:
         self.addPort(('http://physiomeproject.org/workflow/1.0/rdf-schema#port',
                       'http://physiomeproject.org/workflow/1.0/rdf-schema#uses',
-                      'file_location'))
+                      'http://physiomeproject.org/workflow/1.0/rdf-schema#file_location'))
+        # Ports:
+        self.addPort(('http://physiomeproject.org/workflow/1.0/rdf-schema#port',
+                      'http://physiomeproject.org/workflow/1.0/rdf-schema#provides',
+                      'http://physiomeproject.org/workflow/1.0/rdf-schema#file_location'))
         # Port data:
         self._portData0 = None # file_location
         # Config:
@@ -38,7 +43,10 @@ class ArgonViewerStep(WorkflowStepMountPoint):
         may be connected up to a button in a widget for example.
         """
         # Put your execute step code here before calling the '_doneExecution' method.
-        self._doneExecution()
+        self._model = ArgonViewerModel(self._portData0, self._location, self._config['identifier'])
+        self._view = ArgonViewerWidget(self._model)
+        self._view.registerDoneExecution(self._doneExecution)
+        self._setCurrentWidget(self._view)
 
     def setPortData(self, index, dataIn):
         """
@@ -50,6 +58,18 @@ class ArgonViewerStep(WorkflowStepMountPoint):
         :param dataIn: The data to set for the port at the given index.
         """
         self._portData0 = dataIn # file_location
+
+    def getPortData(self, index):
+        """
+        Add your code here that will return the appropriate objects for this step.
+        The index is the index of the port in the port list.  If there is only one
+        provides port for this step then the index can be ignored.
+
+        :param index: Index of the port to return.
+        """
+        self._port2_outputArgonFile = self._model.getOutputModelFileName()
+        print(self._port2_outputArgonFile)
+        return self._port2_outputArgonFile # http://physiomeproject.org/workflow/1.0/rdf-schema#file_location
 
     def configure(self):
         """
