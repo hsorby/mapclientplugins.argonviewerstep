@@ -16,6 +16,7 @@ from opencmiss.zinc.scenefilter import Scenefilter
 from opencmiss.zinc.streamscene import StreaminformationScene 
 from opencmiss.zinc.result import RESULT_OK
 from opencmiss.argon.core.argondocument import ArgonDocument
+from opencmiss.argon.core.argonerror import ArgonError
 from opencmiss.argon.core.argonlogger import ArgonLogger
 
 
@@ -57,11 +58,14 @@ class ArgonViewerModel(object):
                 self._location = filename
                 # self.documentChanged.emit()
                 return True
-        except (NeonError, IOError, ValueError) as e:
-            ArgonLogger.getLogger().error("Failed to load Neon model " + filename + ": " + str(e))
+        except (ArgonError, IOError, ValueError) as e:
+            ArgonLogger.getLogger().error("Failed to load Argon model " + filename + ": " + str(e))
         except:
-            ArgonLogger.getLogger().error("Failed to load Neon model " + filename + ": Unknown error")
+            ArgonLogger.getLogger().error("Failed to load Argon model " + filename + ": Unknown error")
         if model_changed:
+            print(model_changed)
+            # TODO: Bug here
+            # AttributeError: 'ArgonViewerModel' object has no attribute 'new'
             self.new()  # in case document half constructed; emits documentChanged
         return False
 
