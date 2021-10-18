@@ -2,13 +2,16 @@
 MAP Client Plugin Step
 """
 import json
+import os.path
 
 from PySide2 import QtGui
 
 from mapclient.mountpoints.workflowstep import WorkflowStepMountPoint
 from mapclientplugins.argonviewerstep.configuredialog import ConfigureDialog
+from mapclientplugins.argonviewerstep.model.utilities import is_argon_file
 from mapclientplugins.argonviewerstep.view.argonviewerwidget import ArgonViewerWidget
 from mapclientplugins.argonviewerstep.model.argonviewermodel import ArgonViewerModel
+
 
 class ArgonViewerStep(WorkflowStepMountPoint):
     """
@@ -18,23 +21,28 @@ class ArgonViewerStep(WorkflowStepMountPoint):
 
     def __init__(self, location):
         super(ArgonViewerStep, self).__init__('Argon Viewer', location)
-        self._configured = False # A step cannot be executed until it has been configured.
+        self._configured = False  # A step cannot be executed until it has been configured.
         self._category = 'Model Viewer'
         # Add any other initialisation code here:
         self._icon = QtGui.QImage(':/argonviewerstep/images/model-viewer.png')
         # Ports:
-        self.addPort(('http://physiomeproject.org/workflow/1.0/rdf-schema#port',
-                      'http://physiomeproject.org/workflow/1.0/rdf-schema#uses',
-                      'http://physiomeproject.org/workflow/1.0/rdf-schema#file_location'))
+        self.addPort([('http://physiomeproject.org/workflow/1.0/rdf-schema#port',
+                       'http://physiomeproject.org/workflow/1.0/rdf-schema#uses',
+                       'http://physiomeproject.org/workflow/1.0/rdf-schema#file_location'),
+                      ('http://physiomeproject.org/workflow/1.0/rdf-schema#port',
+                       'http://physiomeproject.org/workflow/1.0/rdf-schema#uses',
+                       'http://physiomeproject.org/workflow/1.0/rdf-schema#multiple_file_locations')
+                      ])
         # Ports:
         self.addPort(('http://physiomeproject.org/workflow/1.0/rdf-schema#port',
                       'http://physiomeproject.org/workflow/1.0/rdf-schema#provides',
-                      'http://physiomeproject.org/workflow/1.0/rdf-schema#file_location'))
-        # Port data:
-        self._portData0 = None # file_location
+                      'https://opencmiss.org/1.0/rdf-schema#ArgonDocument'))
         # Config:
-        self._config = {}
-        self._config['identifier'] = ''
+        self._config = {'identifier': ''}
+        # Port data:
+        self._file_locations = None  # file_location
+        self._model = None
+        self._view = None
 
     def execute(self):
         """
@@ -43,8 +51,25 @@ class ArgonViewerStep(WorkflowStepMountPoint):
         may be connected up to a button in a widget for example.
         """
         # Put your execute step code here before calling the '_doneExecution' method.
-        self._model = ArgonViewerModel(self._portData0, self._location, self._config['identifier'])
+        self._model = ArgonViewerModel()
+        index = 0
+        max_files = len(self._file_locations)
+        while index < max_files and not is_argon_file(self._file_locations[index]):
+            index += 1
+
+        load_success = False
+        if index < max_files:
+            load_success = self._model.load(self._file_locations[index])
+
+        backup_doc = os.path.join(self._location, self._config['identifier'] + '-backup-document.json')
+        if not load_success:
+            if not self._model.load(backup_doc):
+                self._model.new()
+
+        self._model.setSources(self._file_locations)
+
         self._view = ArgonViewerWidget(self._model)
+        self._view.setBackupDocument(backup_doc)
         self._view.registerDoneExecution(self._doneExecution)
         self._setCurrentWidget(self._view)
 
@@ -57,7 +82,10 @@ class ArgonViewerStep(WorkflowStepMountPoint):
         :param index: Index of the port to return.
         :param dataIn: The data to set for the port at the given index.
         """
-        self._portData0 = dataIn # file_location
+        if not isinstance(dataIn, list):
+            dataIn = [dataIn]
+
+        self._file_locations = dataIn  # file_location
 
     def getPortData(self, index):
         """
@@ -67,9 +95,7 @@ class ArgonViewerStep(WorkflowStepMountPoint):
 
         :param index: Index of the port to return.
         """
-        self._port2_outputArgonFile = self._model.getOutputModelFileName()
-        print(self._port2_outputArgonFile)
-        return self._port2_outputArgonFile # http://physiomeproject.org/workflow/1.0/rdf-schema#file_location
+        return self._model.getDocument()
 
     def configure(self):
         """

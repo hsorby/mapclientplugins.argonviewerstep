@@ -31,30 +31,15 @@ class Ui_ConfigureDialog(object):
         self.configGroupBox.setObjectName(u"configGroupBox")
         self.formLayout = QFormLayout(self.configGroupBox)
         self.formLayout.setObjectName(u"formLayout")
-        self.label0 = QLabel(self.configGroupBox)
-        self.label0.setObjectName(u"label0")
+        self.labelIdentifier = QLabel(self.configGroupBox)
+        self.labelIdentifier.setObjectName(u"labelIdentifier")
 
-        self.formLayout.setWidget(0, QFormLayout.LabelRole, self.label0)
+        self.formLayout.setWidget(0, QFormLayout.LabelRole, self.labelIdentifier)
 
-        self.lineEdit0 = QLineEdit(self.configGroupBox)
-        self.lineEdit0.setObjectName(u"lineEdit0")
+        self.lineEditIdentifier = QLineEdit(self.configGroupBox)
+        self.lineEditIdentifier.setObjectName(u"lineEditIdentifier")
 
-        self.formLayout.setWidget(0, QFormLayout.FieldRole, self.lineEdit0)
-
-        self.argonFile_rb = QRadioButton(self.configGroupBox)
-        self.argonFile_rb.setObjectName(u"argonFile_rb")
-
-        self.formLayout.setWidget(1, QFormLayout.FieldRole, self.argonFile_rb)
-
-        self.exfFile_rb = QRadioButton(self.configGroupBox)
-        self.exfFile_rb.setObjectName(u"exfFile_rb")
-
-        self.formLayout.setWidget(2, QFormLayout.FieldRole, self.exfFile_rb)
-
-        self.label = QLabel(self.configGroupBox)
-        self.label.setObjectName(u"label")
-
-        self.formLayout.setWidget(1, QFormLayout.LabelRole, self.label)
+        self.formLayout.setWidget(0, QFormLayout.FieldRole, self.lineEditIdentifier)
 
 
         self.gridLayout.addWidget(self.configGroupBox, 0, 0, 1, 1)
@@ -70,9 +55,6 @@ class Ui_ConfigureDialog(object):
     def retranslateUi(self, ConfigureDialog):
         ConfigureDialog.setWindowTitle(QCoreApplication.translate("ConfigureDialog", u"Configure Step", None))
         self.configGroupBox.setTitle("")
-        self.label0.setText(QCoreApplication.translate("ConfigureDialog", u"identifier:  ", None))
-        self.argonFile_rb.setText(QCoreApplication.translate("ConfigureDialog", u"Argon File", None))
-        self.exfFile_rb.setText(QCoreApplication.translate("ConfigureDialog", u"Exf File", None))
-        self.label.setText(QCoreApplication.translate("ConfigureDialog", u"Input File Type:", None))
+        self.labelIdentifier.setText(QCoreApplication.translate("ConfigureDialog", u"Identifier:  ", None))
     # retranslateUi
 

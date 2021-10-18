@@ -1,6 +1,6 @@
 from PySide2 import QtCore, QtWidgets
+from opencmiss.argon.argonlogger import ArgonLogger
 
-from mapclientplugins.argonviewerstep.ui.ui_argonviewerwidget import Ui_ArgonViewerWidget
 from opencmiss.zincwidgets.materialeditorwidget import MaterialEditorWidget
 from opencmiss.zincwidgets.regioneditorwidget import RegionEditorWidget
 from opencmiss.zincwidgets.sceneviewereditorwidget import SceneviewerEditorWidget
@@ -10,6 +10,10 @@ from opencmiss.zincwidgets.spectrumeditorwidget import SpectrumEditorWidget
 from opencmiss.zincwidgets.tessellationeditorwidget import TessellationEditorWidget
 from opencmiss.zincwidgets.timeeditorwidget import TimeEditorWidget
 from opencmiss.zincwidgets.fieldlisteditorwidget import FieldListEditorWidget
+from opencmiss.zincwidgets.modelsourceseditorwidget import ModelSourcesEditorWidget, ModelSourcesModel
+
+from mapclientplugins.argonviewerstep.ui.ui_argonviewerwidget import Ui_ArgonViewerWidget
+
 
 class ArgonViewerWidget(QtWidgets.QMainWindow):
 
@@ -30,6 +34,8 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
 
         self._location = None  # The last location/directory used by the application
         self._current_view = None
+
+        self._previous_backup_document = None
 
         self._sceneviewerwidget.setContext(model.getContext())
         self._model = model
@@ -60,27 +66,28 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
         document = self._model.getDocument()
         rootRegion = document.getRootRegion()
         rootRegion.connectRegionChange(self._regionChange)
+        zincRootRegion = rootRegion.getZincRegion()
 
         # need to pass new Zinc context to dialogs and widgets using global modules
         zincContext = document.getZincContext()
         self._sceneviewerwidget.setContext(zincContext)
         self.dockWidgetContentsSpectrumEditor.setSpectrums(document.getSpectrums())
-        self.dockWidgetContentsTessellationEditor.setZincContext(zincContext)
+        self.dockWidgetContentsTessellationEditor.setTessellations(document.getTessellations())
+        self.dockWidgetContentsMaterialEditor.setMaterials(document.getMaterials())
         self.dockWidgetContentsTimeEditor.setZincContext(zincContext)
-        self.dockWidgetContentsMaterialEditor.setZincContext(zincContext)
+
+        model_sources_model = ModelSourcesModel(document, self._model.getSources())
+        self.dockWidgetContentsModelSources.setModelSourcesModel(zincRootRegion, model_sources_model)
+        # self.dockWidgetContentsModelSources.set
 
         # need to pass new root region to the following
         self.dockWidgetContentsRegionEditor.setRootRegion(rootRegion)
+        self.dockWidgetContentsSceneEditor.setZincRootRegion(zincRootRegion)
 
-        # need to pass new scene to the following
-        zincRootRegion = rootRegion.getZincRegion()
-        scene = zincRootRegion.getScene()
-        self.dockWidgetContentsSceneEditor.setScene(scene)
         self.dockWidgetContentsFieldEditor.setFieldmodule(zincRootRegion.getFieldmodule())
         self.dockWidgetContentsFieldEditor.setArgonRegion(rootRegion)
         self.dockWidgetContentsFieldEditor.setTimekeeper(zincContext.getTimekeepermodule().getDefaultTimekeeper())
-        
-        
+
         if self._visualisation_view_ready:
             self._restoreSceneviewerState()
         else:
@@ -89,14 +96,17 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
     def setZincContext(self, zincContext):
         raise NotImplementedError()
 
+    def setBackupDocument(self, name):
+        self._previous_backup_document = name
+
     def getDependentEditors(self):
         return self._dock_widgets
 
     def registerDependentEditor(self, editor):
-        '''
+        """
         Add the given editor to the list of dependent editors for
         this view.
-        '''
+        """
         self._dock_widgets.append(editor)
 
     def _makeConnections(self):
@@ -105,8 +115,9 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
         # self._model.documentChanged.connect(self._onDocumentChanged)        
 
     def _addDockWidgets(self):
-        self.addDockWidget(QtCore.Qt.DockWidgetArea(QtCore.Qt.LeftDockWidgetArea), self.dockWidgetTessellationEditor)
-        self.addDockWidget(QtCore.Qt.DockWidgetArea(QtCore.Qt.BottomDockWidgetArea), self.dockWidgetTimeEditor)
+        self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.dockWidgetModelSources)
+        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.dockWidgetTimeEditor)
+        self.tabifyDockWidget(self.dockWidgetModelSources, self.dockWidgetTessellationEditor)
         self.tabifyDockWidget(self.dockWidgetTessellationEditor, self.dockWidgetSpectrumEditor)
         self.tabifyDockWidget(self.dockWidgetSpectrumEditor, self.dockWidgetSceneEditor)
         self.tabifyDockWidget(self.dockWidgetSceneEditor, self.dockWidgetSceneviewerEditor)
@@ -123,6 +134,15 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
         self.dockWidgetContentsMaterialEditor.setObjectName("dockWidgetContentsMaterialEditor")
         self.dockWidgetMaterialEditor.setWidget(self.dockWidgetContentsMaterialEditor)
         self.dockWidgetMaterialEditor.setHidden(True)
+
+        self.dockWidgetModelSources = QtWidgets.QDockWidget(self)
+        self.dockWidgetModelSources.setWindowTitle('Model Sources')
+        self.dockWidgetModelSources.setObjectName("dockWidgetModelSources")
+        self.dockWidgetContentsModelSources = ModelSourcesEditorWidget()
+        self.dockWidgetContentsModelSources.setObjectName("dockWidgetContentsModelSources")
+        self.dockWidgetContentsModelSources.setEnableAddingModelSources(False)
+        self.dockWidgetModelSources.setWidget(self.dockWidgetContentsModelSources)
+        self.dockWidgetModelSources.setHidden(False)
 
         self.dockWidgetRegionEditor = QtWidgets.QDockWidget(self)
         self.dockWidgetRegionEditor.setWindowTitle('Region Editor')
@@ -190,12 +210,28 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
         self._registerEditor(self.dockWidgetTessellationEditor)
         self._registerEditor(self.dockWidgetTimeEditor)
         self._registerEditor(self.dockWidgetFieldEditor)
+        self._registerEditor(self.dockWidgetModelSources)
 
         #self._toolbar.addSeparator()
 
     def _registerEditor(self, editor):
-        self._toolbar.addAction(editor.toggleViewAction())
+        toggle_action = editor.toggleViewAction()
+        toggle_action.triggered.connect(self._view_dock_widget)
+        self._toolbar.addAction(toggle_action)
         # view.registerDependentEditor(editor)
+
+    def _view_dock_widget(self, show):
+        """
+        If we are showing the dock widget we will make it current i.e. make sure it is visible if tabbed.
+        """
+        if show:
+            sender_text = self.sender().text()
+            for tab_bar in self.findChildren(QtWidgets.QTabBar):
+                for index in range(tab_bar.count()):
+                    tab_text = tab_bar.tabText(index)
+                    if tab_text == sender_text:
+                        tab_bar.setCurrentIndex(index)
+                        return
 
     def _getEditorAction(self, action_name):
         action = None
@@ -207,7 +243,6 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
 
     def _setupViews(self, views):
         zincContext = self._model.getContext()
-        print(zincContext)
         for v in views:
             self._ui.viewStackedWidget.addWidget(v)
             v.setContext(zincContext)
@@ -228,5 +263,10 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
         self._callback = callback
 
     def _doneButtonClicked(self):
-        self._model.done()
+        with open(self._previous_backup_document, 'w') as f:
+            document = self._model.getDocument()
+            document.getSceneviewer().updateParameters(self._sceneviewerwidget.getSceneviewer())
+            f.write(document.serialize())
+
+        ArgonLogger.closeLogger()
         self._callback()
