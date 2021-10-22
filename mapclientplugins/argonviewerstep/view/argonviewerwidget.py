@@ -1,4 +1,5 @@
 from PySide2 import QtCore, QtWidgets
+
 from opencmiss.argon.argonlogger import ArgonLogger
 
 from opencmiss.zincwidgets.materialeditorwidget import MaterialEditorWidget
