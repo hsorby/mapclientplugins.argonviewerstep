@@ -30,8 +30,8 @@ class ArgonViewerStep(WorkflowStepMountPoint):
                        'http://physiomeproject.org/workflow/1.0/rdf-schema#uses',
                        'http://physiomeproject.org/workflow/1.0/rdf-schema#file_location'),
                       ('http://physiomeproject.org/workflow/1.0/rdf-schema#port',
-                       'http://physiomeproject.org/workflow/1.0/rdf-schema#uses',
-                       'http://physiomeproject.org/workflow/1.0/rdf-schema#multiple_file_locations')
+                       'http://physiomeproject.org/workflow/1.0/rdf-schema#uses-list-of',
+                       'http://physiomeproject.org/workflow/1.0/rdf-schema#file_location')
                       ])
         # Ports:
         self.addPort(('http://physiomeproject.org/workflow/1.0/rdf-schema#port',
