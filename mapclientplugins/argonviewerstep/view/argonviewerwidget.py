@@ -85,8 +85,7 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
         self.dockWidgetContentsRegionEditor.setRootRegion(rootRegion)
         self.dockWidgetContentsSceneEditor.setZincRootRegion(zincRootRegion)
 
-        self.dockWidgetContentsFieldEditor.setFieldmodule(zincRootRegion.getFieldmodule())
-        self.dockWidgetContentsFieldEditor.setArgonRegion(rootRegion)
+        self.dockWidgetContentsFieldEditor.setRootArgonRegion(rootRegion)
         self.dockWidgetContentsFieldEditor.setTimekeeper(zincContext.getTimekeepermodule().getDefaultTimekeeper())
 
         if self._visualisation_view_ready:
