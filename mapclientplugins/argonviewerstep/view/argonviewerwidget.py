@@ -256,6 +256,9 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
         document = self._model.getDocument()
         sceneviewer_state = document.getSceneviewer().serialize()
         self._model.setSceneviewerState(self._sceneviewerwidget.getSceneviewer(), sceneviewer_state)
+        # workaround for Zinc versions not serialising TransparencyLayers
+        if "TransparencyLayers" in sceneviewer_state:
+            self._sceneviewerwidget.getSceneviewer().setTransparencyLayers(sceneviewer_state["TransparencyLayers"])
         self.dockWidgetContentsSceneviewerEditor.setSceneviewer(self._sceneviewerwidget.getSceneviewer())
         self._visualisation_view_state_update_pending = False
 
