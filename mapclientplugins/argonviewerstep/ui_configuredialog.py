@@ -17,7 +17,7 @@ class Ui_ConfigureDialog(object):
     def setupUi(self, ConfigureDialog):
         if not ConfigureDialog.objectName():
             ConfigureDialog.setObjectName(u"ConfigureDialog")
-        ConfigureDialog.resize(418, 303)
+        ConfigureDialog.resize(552, 293)
         self.gridLayout = QGridLayout(ConfigureDialog)
         self.gridLayout.setObjectName(u"gridLayout")
         self.buttonBox = QDialogButtonBox(ConfigureDialog)
@@ -41,6 +41,17 @@ class Ui_ConfigureDialog(object):
 
         self.formLayout.setWidget(0, QFormLayout.FieldRole, self.lineEditIdentifier)
 
+        self.labelAutoLoadBackupDocument = QLabel(self.configGroupBox)
+        self.labelAutoLoadBackupDocument.setObjectName(u"labelAutoLoadBackupDocument")
+
+        self.formLayout.setWidget(1, QFormLayout.LabelRole, self.labelAutoLoadBackupDocument)
+
+        self.checkBoxAutoLoadBackupDocument = QCheckBox(self.configGroupBox)
+        self.checkBoxAutoLoadBackupDocument.setObjectName(u"checkBoxAutoLoadBackupDocument")
+        self.checkBoxAutoLoadBackupDocument.setChecked(True)
+
+        self.formLayout.setWidget(1, QFormLayout.FieldRole, self.checkBoxAutoLoadBackupDocument)
+
 
         self.gridLayout.addWidget(self.configGroupBox, 0, 0, 1, 1)
 
@@ -56,5 +67,7 @@ class Ui_ConfigureDialog(object):
         ConfigureDialog.setWindowTitle(QCoreApplication.translate("ConfigureDialog", u"Configure Step", None))
         self.configGroupBox.setTitle("")
         self.labelIdentifier.setText(QCoreApplication.translate("ConfigureDialog", u"Identifier:  ", None))
+        self.labelAutoLoadBackupDocument.setText(QCoreApplication.translate("ConfigureDialog", u"Auto load backup document:", None))
+        self.checkBoxAutoLoadBackupDocument.setText("")
     # retranslateUi
 

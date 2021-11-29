@@ -38,7 +38,7 @@ class ArgonViewerStep(WorkflowStepMountPoint):
                       'http://physiomeproject.org/workflow/1.0/rdf-schema#provides',
                       'https://opencmiss.org/1.0/rdf-schema#ArgonDocument'))
         # Config:
-        self._config = {'identifier': ''}
+        self._config = {'identifier': '', 'auto-load-backup-doc': True}
         # Port data:
         self._file_locations = None  # file_location
         self._model = None
@@ -62,9 +62,11 @@ class ArgonViewerStep(WorkflowStepMountPoint):
             load_success = self._model.load(self._file_locations[index])
 
         backup_doc = os.path.join(self._location, self._config['identifier'] + '-backup-document.json')
+        if self._config['auto-load-backup-doc'] and not load_success:
+            load_success = self._model.load(backup_doc)
+
         if not load_success:
-            if not self._model.load(backup_doc):
-                self._model.new()
+            self._model.new()
 
         self._model.setSources(self._file_locations)
 

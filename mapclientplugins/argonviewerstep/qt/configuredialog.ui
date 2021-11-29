@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>418</width>
-    <height>303</height>
+    <width>552</width>
+    <height>293</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -39,6 +39,23 @@
       </item>
       <item row="0" column="1">
        <widget class="QLineEdit" name="lineEditIdentifier"/>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="labelAutoLoadBackupDocument">
+        <property name="text">
+         <string>Auto load backup document:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QCheckBox" name="checkBoxAutoLoadBackupDocument">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
