@@ -1,4 +1,4 @@
-from PySide2 import QtCore, QtWidgets
+from PySide2 import QtCore, QtGui, QtWidgets
 
 from opencmiss.argon.argonlogger import ArgonLogger
 
@@ -12,6 +12,10 @@ from opencmiss.zincwidgets.tessellationeditorwidget import TessellationEditorWid
 from opencmiss.zincwidgets.timeeditorwidget import TimeEditorWidget
 from opencmiss.zincwidgets.fieldlisteditorwidget import FieldListEditorWidget
 from opencmiss.zincwidgets.modelsourceseditorwidget import ModelSourcesEditorWidget, ModelSourcesModel
+from opencmiss.zincwidgets.addviewwidget import AddView
+from opencmiss.zincwidgets.editabletabbar import EditableTabBar
+from opencmiss.zincwidgets.viewwidget import ViewWidget
+from opencmiss.zincwidgets.scenelayoutchooserdialog import SceneLayoutChooserDialog
 
 from mapclientplugins.argonviewerstep.ui.ui_argonviewerwidget import Ui_ArgonViewerWidget
 
@@ -22,23 +26,11 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
         super(ArgonViewerWidget, self).__init__(parent)
         self._ui = Ui_ArgonViewerWidget()
         self._ui.setupUi(self)
-
-        self._visualisation_view_state_update_pending = False
-
-        # List of possible views
-        self._sceneviewerwidget = SceneviewerWidget(self)
-        self._visualisation_view_ready = False
-
-        self._view_states = {self._sceneviewerwidget: ''}
-
-        view_list = [self._sceneviewerwidget]
+        self._ui.viewTabWidget.setTabBar(EditableTabBar(self.parentWidget()))
 
         self._location = None  # The last location/directory used by the application
-        self._current_view = None
 
         self._previous_backup_document = None
-
-        self._sceneviewerwidget.setContext(model.getContext())
         self._model = model
 
         self._toolbar = self._ui.toolBar
@@ -46,32 +38,19 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
         self._makeConnections()
         self._setupEditors()
         self._registerEditors()
-        self._setupViews(view_list)
+        self._setupViews()
         self._addDockWidgets()
         self._onDocumentChanged()
 
         self._callback = None
 
-    def _regionChange(self, changedRegion, treeChange):
-        """
-        Notifies sceneviewer if affected by tree change i.e. needs new scene.
-        :param changedRegion: The top region changed
-        :param treeChange: True if structure of tree, or zinc objects reconstructed
-        """
-        # following may need changing once sceneviewer can look at sub scenes, since resets to root scene:
-        if treeChange and (changedRegion is self._model.getDocument().getRootRegion()):
-            zincRootRegion = changedRegion.getZincRegion()
-            self._sceneviewerwidget.getSceneviewer().setScene(zincRootRegion.getScene())
-
     def _onDocumentChanged(self):
         document = self._model.getDocument()
         rootRegion = document.getRootRegion()
-        rootRegion.connectRegionChange(self._regionChange)
         zincRootRegion = rootRegion.getZincRegion()
 
-        # need to pass new Zinc context to dialogs and widgets using global modules
+        # Need to pass new Zinc context to dialogs and widgets using global modules.
         zincContext = document.getZincContext()
-        self._sceneviewerwidget.setContext(zincContext)
         self.dockWidgetContentsSpectrumEditor.setSpectrums(document.getSpectrums())
         self.dockWidgetContentsTessellationEditor.setTessellations(document.getTessellations())
         self.dockWidgetContentsMaterialEditor.setMaterials(document.getMaterials())
@@ -79,19 +58,16 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
 
         model_sources_model = ModelSourcesModel(document, self._model.getSources())
         self.dockWidgetContentsModelSources.setModelSourcesModel(zincRootRegion, model_sources_model)
-        # self.dockWidgetContentsModelSources.set
 
-        # need to pass new root region to the following
+        # Need to pass new root region to the following.
         self.dockWidgetContentsRegionEditor.setRootRegion(rootRegion)
         self.dockWidgetContentsSceneEditor.setZincRootRegion(zincRootRegion)
-
+        self.dockWidgetContentsSceneviewerEditor.setZincRootRegion(zincRootRegion)
         self.dockWidgetContentsFieldEditor.setRootArgonRegion(rootRegion)
         self.dockWidgetContentsFieldEditor.setTimekeeper(zincContext.getTimekeepermodule().getDefaultTimekeeper())
 
-        if self._visualisation_view_ready:
-            self._restoreSceneviewerState()
-        else:
-            self._visualisation_view_state_update_pending = True
+        view_manager = document.getViewManager()
+        self._views_changed(view_manager)
 
     def setZincContext(self, zincContext):
         raise NotImplementedError()
@@ -111,8 +87,11 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
 
     def _makeConnections(self):
         self._ui.pushButtonDone.clicked.connect(self._doneButtonClicked)
-        self._sceneviewerwidget.graphicsInitialized.connect(self._visualisationViewReady)
-        # self._model.documentChanged.connect(self._onDocumentChanged)        
+        self._ui.viewTabWidget.tabCloseRequested.connect(self._viewTabCloseRequested)
+        self._ui.viewTabWidget.currentChanged.connect(self._currentViewChanged)
+        tab_bar = self._ui.viewTabWidget.tabBar()
+        tab_bar.tabTextEdited.connect(self._viewTabTextEdited)
+
 
     def _addDockWidgets(self):
         self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.dockWidgetModelSources)
@@ -220,6 +199,43 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
         self._toolbar.addAction(toggle_action)
         # view.registerDependentEditor(editor)
 
+    def _views_changed(self, view_manager):
+        views = view_manager.getViews()
+
+        # Remove all views.
+        self._ui.viewTabWidget.clear()
+        tab_bar = self._ui.viewTabWidget.tabBar()
+
+        if views:
+            tab_bar.set_editable(True)
+            active_widget = None
+            # Instate views.
+            zincContext = self._model.getContext()
+            active_view = view_manager.getActiveView()
+            for v in views:
+                w = ViewWidget(v.getScenes(), v.getGridSpecification(), self._ui.viewTabWidget)
+                # w.graphicsReady.connect(self._view_graphics_ready)
+                w.currentChanged.connect(self._current_sceneviewer_changed)
+                w.setContext(view_manager.getZincContext())
+                view_name = v.getName()
+                self._ui.viewTabWidget.addTab(w, view_name)
+
+                if active_view == view_name:
+                    active_widget = w
+
+            if active_widget is not None:
+                self._ui.viewTabWidget.setCurrentWidget(w)
+            else:
+                self._ui.viewTabWidget.setCurrentIndex(0)
+            self._ui.viewTabWidget.setTabsClosable(True)
+        else:
+            tab_bar.set_editable(False)
+
+            add_view = AddView()
+            add_view.clicked.connect(self._add_view_clicked)
+            self._ui.viewTabWidget.addTab(add_view, "Add View")
+            self._ui.viewTabWidget.setTabsClosable(False)
+
     def _view_dock_widget(self, show):
         """
         If we are showing the dock widget we will make it current i.e. make sure it is visible if tabbed.
@@ -241,34 +257,76 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
             action = existing_actions[0]
         return action
 
-    def _setupViews(self, views):
-        zincContext = self._model.getContext()
-        for v in views:
-            self._ui.viewStackedWidget.addWidget(v)
-            v.setContext(zincContext)
+    def _viewTabCloseRequested(self, index):
+        document = self._model.getDocument()
+        view_manager = document.getViewManager()
+        view_manager.removeView(index)
+        self._views_changed(view_manager)
+
+    def _viewTabTextEdited(self, index, value):
+        document = self._model.getDocument()
+        view_manager = document.getViewManager()
+        view = view_manager.getView(index)
+        view.setName(value)
+
+    def _currentViewChanged(self, index):
+        document = self._model.getDocument()
+        view_manager = document.getViewManager()
+        view_manager.setActiveView(self._ui.viewTabWidget.tabText(index))
+
+    def _setupViews(self):
+        icon = QtGui.QIcon(":/zincwidgets/images/icons/list-add-icon.png")
+        btn = QtWidgets.QToolButton()
+        btn.setStyleSheet("border-radius: 0.75em; border-width: 1px; border-style: solid; border-color: dark-grey;"
+                          " background-color: grey; min-width: 1.5em; min-height: 1.5em; margin-right: 1em;")
+        btn.setIcon(icon)
+        btn.setAutoFillBackground(True)
+        btn.clicked.connect(self._add_view_clicked)
+
+        self._ui.viewTabWidget.setCornerWidget(btn)
+
+    def _current_sceneviewer_changed(self, row, col):
+        sceneviewer = self._ui.viewTabWidget.currentWidget().getSceneviewer(row, col)
+        self.dockWidgetContentsSceneviewerEditor.setSceneviewer(sceneviewer)
 
     def _visualisationViewReady(self):
         self._visualisation_view_ready = True
         if self._visualisation_view_state_update_pending:
             self._restoreSceneviewerState()
 
-    def _restoreSceneviewerState(self):
-        document = self._model.getDocument()
-        sceneviewer_state = document.getSceneviewer().serialize()
-        self._model.setSceneviewerState(self._sceneviewerwidget.getSceneviewer(), sceneviewer_state)
-        # workaround for Zinc versions not serialising TransparencyLayers
-        if "TransparencyLayers" in sceneviewer_state:
-            self._sceneviewerwidget.getSceneviewer().setTransparencyLayers(sceneviewer_state["TransparencyLayers"])
-        self.dockWidgetContentsSceneviewerEditor.setSceneviewer(self._sceneviewerwidget.getSceneviewer())
-        self._visualisation_view_state_update_pending = False
-
     def registerDoneExecution(self, callback):
         self._callback = callback
+
+    def _add_view_clicked(self):
+        dlg = SceneLayoutChooserDialog(self)
+        dlg.setModal(True)
+        if dlg.exec_():
+            layout = dlg.selected_layout()
+            document = self._model.getDocument()
+            view_manager = document.getViewManager()
+            view_manager.addView(layout)
+            view_manager.setActiveView(layout)
+            self._views_changed(view_manager)
 
     def _doneButtonClicked(self):
         with open(self._previous_backup_document, 'w') as f:
             document = self._model.getDocument()
-            document.getSceneviewer().updateParameters(self._sceneviewerwidget.getSceneviewer())
+            view_manager = document.getViewManager()
+            for index in range(self._ui.viewTabWidget.count()):
+                self._ui.viewTabWidget.setCurrentIndex(index)
+                tab = self._ui.viewTabWidget.widget(index)
+                tab_layout = tab.layout()
+
+                view = view_manager.getView(index)
+                view.setName(self._ui.viewTabWidget.tabText(index))
+
+                rows = tab_layout.rowCount()
+                columns = tab_layout.columnCount()
+                for r in range(rows):
+                    for c in range(columns):
+                        sceneviewer_widget = tab_layout.itemAtPosition(r, c).widget()
+                        view.updateSceneviewer(r, c, sceneviewer_widget.getSceneviewer())
+
             f.write(document.serialize())
 
         ArgonLogger.closeLogger()
