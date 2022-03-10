@@ -18,24 +18,33 @@ class Ui_ArgonViewerWidget(object):
         if not ArgonViewerWidget.objectName():
             ArgonViewerWidget.setObjectName(u"ArgonViewerWidget")
         ArgonViewerWidget.resize(908, 833)
-        self.toolBar = QToolBar(ArgonViewerWidget)
-        self.toolBar.setObjectName(u"toolBar")
-        ArgonViewerWidget.addToolBar(self.toolBar)
         self.centralwidget = QWidget(ArgonViewerWidget)
         self.centralwidget.setObjectName(u"centralwidget")
         self.verticalLayout = QVBoxLayout(self.centralwidget)
         self.verticalLayout.setObjectName(u"verticalLayout")
-        self.viewStackedWidget = QStackedWidget(self.centralwidget)
-        self.viewStackedWidget.setObjectName(u"viewStackedWidget")
+        self.viewTabWidget = QTabWidget(self.centralwidget)
+        self.viewTabWidget.setObjectName(u"viewTabWidget")
 
-        self.verticalLayout.addWidget(self.viewStackedWidget)
+        self.verticalLayout.addWidget(self.viewTabWidget)
+
+        self.horizontalLayout = QHBoxLayout()
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout.addItem(self.horizontalSpacer)
 
         self.pushButtonDone = QPushButton(self.centralwidget)
         self.pushButtonDone.setObjectName(u"pushButtonDone")
 
-        self.verticalLayout.addWidget(self.pushButtonDone)
+        self.horizontalLayout.addWidget(self.pushButtonDone)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout)
 
         ArgonViewerWidget.setCentralWidget(self.centralwidget)
+        self.toolBar = QToolBar(ArgonViewerWidget)
+        self.toolBar.setObjectName(u"toolBar")
+        ArgonViewerWidget.addToolBar(Qt.TopToolBarArea, self.toolBar)
 
         self.retranslateUi(ArgonViewerWidget)
 
@@ -43,7 +52,7 @@ class Ui_ArgonViewerWidget(object):
     # setupUi
 
     def retranslateUi(self, ArgonViewerWidget):
+        ArgonViewerWidget.setWindowTitle(QCoreApplication.translate("ArgonViewerWidget", u"Argon Viewer", None))
         self.pushButtonDone.setText(QCoreApplication.translate("ArgonViewerWidget", u"Done", None))
-        pass
     # retranslateUi
 
