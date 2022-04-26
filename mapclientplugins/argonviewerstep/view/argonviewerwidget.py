@@ -5,7 +5,6 @@ from opencmiss.argon.argonlogger import ArgonLogger
 from opencmiss.zincwidgets.materialeditorwidget import MaterialEditorWidget
 from opencmiss.zincwidgets.regioneditorwidget import RegionEditorWidget
 from opencmiss.zincwidgets.sceneviewereditorwidget import SceneviewerEditorWidget
-from opencmiss.zincwidgets.sceneviewerwidget import SceneviewerWidget
 from opencmiss.zincwidgets.sceneeditorwidget import SceneEditorWidget
 from opencmiss.zincwidgets.spectrumeditorwidget import SpectrumEditorWidget
 from opencmiss.zincwidgets.tessellationeditorwidget import TessellationEditorWidget
@@ -66,8 +65,7 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
         self.dockWidgetContentsFieldEditor.setRootArgonRegion(rootRegion)
         self.dockWidgetContentsFieldEditor.setTimekeeper(zincContext.getTimekeepermodule().getDefaultTimekeeper())
 
-        view_manager = document.getViewManager()
-        self._views_changed(view_manager)
+        self._load_views()
 
     def setZincContext(self, zincContext):
         raise NotImplementedError()
@@ -91,7 +89,6 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
         self._ui.viewTabWidget.currentChanged.connect(self._currentViewChanged)
         tab_bar = self._ui.viewTabWidget.tabBar()
         tab_bar.tabTextEdited.connect(self._viewTabTextEdited)
-
 
     def _addDockWidgets(self):
         self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.dockWidgetModelSources)
@@ -191,50 +188,63 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
         self._registerEditor(self.dockWidgetFieldEditor)
         self._registerEditor(self.dockWidgetModelSources)
 
-        #self._toolbar.addSeparator()
-
     def _registerEditor(self, editor):
         toggle_action = editor.toggleViewAction()
         toggle_action.triggered.connect(self._view_dock_widget)
         self._toolbar.addAction(toggle_action)
         # view.registerDependentEditor(editor)
 
-    def _views_changed(self, view_manager):
+    def _clear_views(self):
+        self._ui.viewTabWidget.clear()
+
+    def _find_matching_view_widget_index(self, id_):
+        for index in range(self._ui.viewTabWidget.count()):
+            w = self._ui.viewTabWidget.widget(index)
+            if w.getId() == id_:
+                return index
+
+        return None
+
+    def _keep_views_with_id(self, keep_ids):
+        for keep_id in keep_ids:
+            index = self._find_matching_view_widget_index(keep_id)
+            if index is not None:
+                self._ui.viewTabWidget.removeTab(index)
+
+    def _load_no_views(self):
+        add_view = AddView()
+        add_view.clicked.connect(self._add_view_clicked)
+        self._ui.viewTabWidget.addTab(add_view, "Add View")
+        self._set_views_editable(False)
+
+    def _set_views_editable(self, state):
+        self._ui.viewTabWidget.setTabsClosable(state)
+        tab_bar = self._ui.viewTabWidget.tabBar()
+        tab_bar.set_editable(state)
+
+    def _load_views(self):
+        document = self._model.getDocument()
+        view_manager = document.getViewManager()
         views = view_manager.getViews()
 
-        # Remove all views.
-        self._ui.viewTabWidget.clear()
-        tab_bar = self._ui.viewTabWidget.tabBar()
-
+        self._ui.viewTabWidget.blockSignals(True)
         if views:
-            tab_bar.set_editable(True)
             active_widget = None
-            # Instate views.
-            zincContext = self._model.getContext()
             active_view = view_manager.getActiveView()
             for v in views:
-                w = ViewWidget(v.getScenes(), v.getGridSpecification(), self._ui.viewTabWidget)
-                # w.graphicsReady.connect(self._view_graphics_ready)
-                w.currentChanged.connect(self._current_sceneviewer_changed)
-                w.setContext(view_manager.getZincContext())
-                view_name = v.getName()
-                self._ui.viewTabWidget.addTab(w, view_name)
+                w = self._create_new_view(v, view_manager.getZincContext())
 
-                if active_view == view_name:
+                if active_view == v.getName():
                     active_widget = w
 
             if active_widget is not None:
-                self._ui.viewTabWidget.setCurrentWidget(w)
+                self._ui.viewTabWidget.setCurrentWidget(active_widget)
             else:
                 self._ui.viewTabWidget.setCurrentIndex(0)
-            self._ui.viewTabWidget.setTabsClosable(True)
+            self._set_views_editable(True)
         else:
-            tab_bar.set_editable(False)
-
-            add_view = AddView()
-            add_view.clicked.connect(self._add_view_clicked)
-            self._ui.viewTabWidget.addTab(add_view, "Add View")
-            self._ui.viewTabWidget.setTabsClosable(False)
+            self._load_no_views()
+        self._ui.viewTabWidget.blockSignals(False)
 
     def _view_dock_widget(self, show):
         """
@@ -257,12 +267,6 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
             action = existing_actions[0]
         return action
 
-    def _viewTabCloseRequested(self, index):
-        document = self._model.getDocument()
-        view_manager = document.getViewManager()
-        view_manager.removeView(index)
-        self._views_changed(view_manager)
-
     def _viewTabTextEdited(self, index, value):
         document = self._model.getDocument()
         view_manager = document.getViewManager()
@@ -273,6 +277,7 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
         document = self._model.getDocument()
         view_manager = document.getViewManager()
         view_manager.setActiveView(self._ui.viewTabWidget.tabText(index))
+        self._current_sceneviewer_changed()
 
     def _setupViews(self):
         icon = QtGui.QIcon(":/zincwidgets/images/icons/list-add-icon.png")
@@ -285,8 +290,12 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
 
         self._ui.viewTabWidget.setCornerWidget(btn)
 
-    def _current_sceneviewer_changed(self, row, col):
-        sceneviewer = self._ui.viewTabWidget.currentWidget().getSceneviewer(row, col)
+    def _current_sceneviewer_changed(self):
+        try:
+            sceneviewer = self._ui.viewTabWidget.currentWidget().getActiveSceneviewer()
+        except AttributeError:
+            sceneviewer = None
+
         self.dockWidgetContentsSceneviewerEditor.setSceneviewer(sceneviewer)
 
     def _visualisationViewReady(self):
@@ -297,6 +306,22 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
     def registerDoneExecution(self, callback):
         self._callback = callback
 
+    def _viewTabCloseRequested(self, index):
+        document = self._model.getDocument()
+        view_manager = document.getViewManager()
+        view_manager.removeView(index)
+        self._ui.viewTabWidget.removeTab(index)
+        if self._ui.viewTabWidget.count() == 0:
+            self._load_no_views()
+
+    def _create_new_view(self, view, zinc_context):
+        w = ViewWidget(view.getScenes(), view.getGridSpecification(), self._ui.viewTabWidget)
+
+        w.currentChanged.connect(self._current_sceneviewer_changed)
+        w.setContext(zinc_context)
+        self._ui.viewTabWidget.addTab(w, view.getName())
+        return w
+
     def _add_view_clicked(self):
         dlg = SceneLayoutChooserDialog(self)
         dlg.setModal(True)
@@ -304,14 +329,19 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
             layout = dlg.selected_layout()
             document = self._model.getDocument()
             view_manager = document.getViewManager()
-            view_manager.addView(layout)
-            view_manager.setActiveView(layout)
-            self._views_changed(view_manager)
+            if view_manager.viewCount() == 0:
+                self._ui.viewTabWidget.clear()
+                self._set_views_editable(True)
+            new_view = view_manager.addViewByType(layout)
+            view_manager.setActiveView(new_view.getName())
+            w = self._create_new_view(new_view, view_manager.getZincContext())
+            self._ui.viewTabWidget.setCurrentWidget(w)
 
     def _doneButtonClicked(self):
         with open(self._previous_backup_document, 'w') as f:
             document = self._model.getDocument()
             view_manager = document.getViewManager()
+            self._ui.viewTabWidget.blockSignals(True)
             for index in range(self._ui.viewTabWidget.count()):
                 self._ui.viewTabWidget.setCurrentIndex(index)
                 tab = self._ui.viewTabWidget.widget(index)
@@ -327,6 +357,7 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
                         sceneviewer_widget = tab_layout.itemAtPosition(r, c).widget()
                         view.updateSceneviewer(r, c, sceneviewer_widget.getSceneviewer())
 
+            self._ui.viewTabWidget.blockSignals(False)
             f.write(document.serialize())
 
         ArgonLogger.closeLogger()
