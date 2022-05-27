@@ -134,9 +134,7 @@ Single View is for user to focus scenes from one region.
 Multi-Views
 ^^^^^^^^^^^
 
-:numref:`fig-argon-viewer-multiviews` shows the **Argon Viewer Step** user interface just after loading (after waiting for initial data projections to be calculated). The first fit step is always a Config
-step, and this is shown in the figure. The initial graphical view is dominated by the projection lines from the data in 1000s of microns back to a unit-size scaffold, with longest to shortest projections coloured by a spectrum from red to blue.
-
+:numref:`fig-argon-viewer-multiviews` shows the **Argon Viewer Step** user interface with multiple views.
 .. _fig-argon-viewer-multiviews:
 
 .. figure:: _images/argon-viewer-multiviews.png
