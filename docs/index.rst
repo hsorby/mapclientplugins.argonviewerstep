@@ -10,18 +10,22 @@ The **Argon Viewer Step** is part of the software that is used in the collection
 Overview
 --------
 
-The **Argon Viewer Step** tool 
+The **Argon Viewer Step** is a general purpose visualization tool 
+helps display and manage `Zinc` scenes. The output of this tool is an Argon file which can be used to generate WebGL files for visualization.
+
+This document describes how to set up and use the **Argon Viewer** user interface in 
+Mapping Tools. 
 
 Workflow Connections
 --------------------
 
 As shown in :numref:`fig-argon-viewer-step-workflow`, the **Argon Viewer Step** uses 1 inputs on the left:
 
-1. A **File Chooser** to read from a exf or argon file.
+1. A **File Chooser** to read from a `Zinc library`` compatible EX files or an argon file.
 
-It produces 1 output, also a Zinc EX file, which may be piped to other workflow steps:
+It produces 1 output which may be piped to other workflow steps:
 
-1. The argon file.
+1. An argon file.
 
 .. _fig-argon-viewer-step-workflow:
 
@@ -29,14 +33,14 @@ It produces 1 output, also a Zinc EX file, which may be piped to other workflow 
    :figwidth: 40%
    :align: center
 
-   **Argon Viewer Step** workflow connections.
+   **Argon Viewer** workflow connections.
    
 Whether you use the output in a further workflow step or not, on completion of the workflow step the output is written to a file in the workflow folder under the same name as the step with extension ".argon".
 
 Background
 ----------
 
-This **Argon Viewer Step**  is a bundle of **Zinc Weights**.
+This **Argon Viewer**  is a bundle of **Zinc Weights**.
 
 It includes:
 
@@ -50,7 +54,31 @@ It includes:
 8. Field Editor Weight;
 9. Region Editor Weight.
 
-The details of each weight can be found at `Zinc Weights Documentation <https://github.com/>`.
+The details of these weight can be found at `Zinc Weights Documentation <https://github.com/>`.
+
+
+Install
+-------
+
+Requirements
+^^^^^^^^^^^^
+
+python >= 3.6
+
+mapclient >= 0.16
+
+opencmiss.zinc >= 3.6
+
+opencmiss.zincwidgets >= 2.0
+
+opencmiss.argon >= 0.3
+
+pip install
+^^^^^^^^^^^
+
+This **Argon Viewer** can be installed from PyPi.org with the following command::
+
+  pip install mapclientplugins.argonviewerstep
 
 Usage
 -----
@@ -62,14 +90,14 @@ which uses basic graphic shapes data.
 
 Initial
 ^^^^^^^
-:numref:`fig-argon-viewer-initial` shows the **Argon Viewer Step** user interface just after loading. 
+:numref:`fig-argon-viewer-initial` shows the **Argon Viewer** user interface just after loading. 
 
 .. _fig-argon-viewer-initial:
 
 .. figure:: _images/argon-viewer-initial.png
    :align: center
 
-   Initial Argon Viewer user interface after loading.
+   Initial **Argon Viewer** user interface after loading.
 
 The Weights tabs on the top lists the zinc weights can be used. 
 In the middle of the user interface is a tab widget contains views. Argon Viewer allows users to create
@@ -85,7 +113,7 @@ of sceneviewer widget in the view.
 .. figure:: _images/scene-layout-chooser.png
    :align: center
 
-   Scene Layout Chooser Dialog for selecting view layout.
+   **Scene Layout Chooser Dialog** for selecting view layout.
 
 There are two types of layout can be selected. One full layout with only one sceneviewer widget for single view, and a grid layout
 with four small sceneviewer widget for multiple views.
@@ -99,7 +127,7 @@ Single View
 .. figure:: _images/argon-viewer-single-view.png
    :align: center
 
-   Single View.
+   **Argon Viewer** user interface for single view.
 
 Single View is for user to focus scenes from one region.
 
@@ -114,7 +142,7 @@ step, and this is shown in the figure. The initial graphical view is dominated b
 .. figure:: _images/argon-viewer-multiviews.png
    :align: center
 
-   multiple Views.
+   **Argon Viewer** user interface for multiple Views.
 
 Argon Viewer allows user to view multiple scenes at the same time. There will be a purple border
 instruct which sceneviewer is choosen, and other widgets such as Scene Editor widget and Sceneviewer
