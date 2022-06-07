@@ -10,22 +10,25 @@ The **Argon Viewer Step** is part of the software that is used in the collection
 Overview
 --------
 
-The **Argon Viewer Step** is a general purpose visualization tool 
-helps display and manage `Zinc` scenes. The output of this tool is an Argon file which can be used to generate WebGL files for visualization.
+The **Argon Viewer Step** is a general purpose visualization tool helps display and manage `Zinc` scenes. 
+It's highly relied on `Zinc Widgets` library, also can be seen as a combination of a group of `Zinc Widgets`.
+
+The input of **Argon Viewer Step** is a `Zinc library` compatible EX file, or an Argon file.
+The output of this tool is an Argon file which can be used to generate WebGL files for visualization.
 
 This document describes how to set up and use the **Argon Viewer** user interface in 
-Mapping Tools. 
+Mapping Tools. The reading and writing process of argon document is managed by the underlying `argon library`,  together with the `Zinc library` which handles model representation and computation.
 
 Workflow Connections
 --------------------
 
 As shown in :numref:`fig-argon-viewer-step-workflow`, the **Argon Viewer Step** uses 1 inputs on the left:
 
-1. A **File Chooser** to read from a `Zinc library`` compatible EX files or an argon file.
+1. A **File Chooser** to read from a `Zinc library` compatible EX files or an argon file.
 
 It produces 1 output which may be piped to other workflow steps:
 
-1. An argon file.
+1. An argon structure JSON file, can be used to generate WebGL files for visualization.
 
 .. _fig-argon-viewer-step-workflow:
 
@@ -35,7 +38,7 @@ It produces 1 output which may be piped to other workflow steps:
 
    **Argon Viewer** workflow connections.
    
-Whether you use the output in a further workflow step or not, on completion of the workflow step the output is written to a file in the workflow folder under the same name as the step with extension ".argon".
+Whether you use the output in a further workflow step or not, on completion of the workflow step the output is written to a file in the workflow folder under the same name as the step with extension "-backup-document.json".
 
 Background
 ----------
@@ -54,8 +57,7 @@ It includes:
 8. Field Editor Weight;
 9. Region Editor Weight.
 
-The details of these weight can be found at `Zinc Weights Documentation <https://github.com/>`.
-
+The details of these weight can be found at `Zinc Weights Documentation <https://abi-mapping-tools.readthedocs.io/en/latest/mapclientplugins.zincwidgets/docs/index.html>`_.
 
 Install
 -------
@@ -84,9 +86,12 @@ Usage
 -----
 
 To illustrate the use of Argon Viewer Step we will use 
-a `multi view example workflow <https://github.com/mapclient-workflows/argon-viewer-step-docs-example>`_ 
-(`download zip <https://github.com/mapclient-workflows/argon-viewer-step-docs-example/archive/refs/heads/main.zip>`_) 
-which uses basic graphic shapes data.
+a `multi view example workflow <https://github.com/mapclient-workflows/argon-viewer-docs-example>`_ 
+(`download zip <https://github.com/mapclient-workflows/argon-viewer-docs-example/archive/refs/heads/main.zip>`_) 
+which uses basic graphic shapes data. The main input file of Argon Viewer Step in this workflow is `multi_scene.argon`, 
+with multiple model sources `sphere.exf`, `tube.exf`, `cube.exf`, `bifurcation.exf` and `heart.exfile`.
+The output of the Argon Viewer Step is the `argon_viewer-backup-document.json`, which also is the input of Argon Scene Expoter Step
+after it. This final output of this workflow are WebGL files in the `webGLOutput` folder.
 
 Initial
 ^^^^^^^
@@ -111,6 +116,7 @@ of sceneviewer widget in the view.
 .. _fig-scene-layout-chooser:
 
 .. figure:: _images/scene-layout-chooser.png
+   :figwidth: 40%
    :align: center
 
    **Scene Layout Chooser Dialog** for selecting view layout.
@@ -129,12 +135,13 @@ Single View
 
    **Argon Viewer** user interface for single view.
 
-Single View is for user to focus scenes from one region.
+Single View is for user to focus scenes from one region. In the middle is the sceneviewer weight, and all other widgets around it are dockable.
 
 Multi-Views
 ^^^^^^^^^^^
 
 :numref:`fig-argon-viewer-multiviews` shows the **Argon Viewer Step** user interface with multiple views.
+
 .. _fig-argon-viewer-multiviews:
 
 .. figure:: _images/argon-viewer-multiviews.png
