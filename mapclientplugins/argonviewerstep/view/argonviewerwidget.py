@@ -1,3 +1,5 @@
+import os.path
+
 from PySide2 import QtCore, QtGui, QtWidgets
 
 from opencmiss.argon.argonlogger import ArgonLogger
@@ -358,7 +360,7 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
                         view.updateSceneviewer(r, c, sceneviewer_widget.getSceneviewer())
 
             self._ui.viewTabWidget.blockSignals(False)
-            f.write(document.serialize())
+            f.write(document.serialize(base_path=os.path.dirname(self._previous_backup_document)))
 
         ArgonLogger.closeLogger()
         self._callback()
