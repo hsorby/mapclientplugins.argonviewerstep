@@ -9,8 +9,11 @@ def is_argon_file(filename):
     if not os.path.isfile(filename):
         return False
 
-    with open(filename, 'r') as f:
-        state = f.read()
+    try:
+        with open(filename, 'r') as f:
+            state = f.read()
+    except UnicodeDecodeError:
+        return False
 
     try:
         d = json.loads(state)
