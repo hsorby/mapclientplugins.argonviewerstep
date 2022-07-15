@@ -4,7 +4,7 @@ MAP Client Plugin Step
 import json
 import os.path
 
-from PySide2 import QtGui
+from PySide2 import QtGui, QtWidgets, QtCore
 
 from mapclient.mountpoints.workflowstep import WorkflowStepMountPoint
 from mapclientplugins.argonviewerstep.configuredialog import ConfigureDialog
@@ -38,42 +38,30 @@ class ArgonViewerStep(WorkflowStepMountPoint):
                       'http://physiomeproject.org/workflow/1.0/rdf-schema#provides',
                       'https://opencmiss.org/1.0/rdf-schema#ArgonDocument'))
         # Config:
-        self._config = {'identifier': '', 'auto-load-backup-doc': True}
+        self._config = {'identifier': '', 'auto-load-backup-doc': True,}
+
         # Port data:
         self._file_locations = None  # file_location
         self._model = None
         self._view = None
 
     def execute(self):
-        """
-        Add your code here that will kick off the execution of the step.
-        Make sure you call the _doneExecution() method when finished.  This method
-        may be connected up to a button in a widget for example.
-        """
-        # Put your execute step code here before calling the '_doneExecution' method.
+        QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
         self._model = ArgonViewerModel()
-        index = 0
-        max_files = len(self._file_locations)
-        while index < max_files and not is_argon_file(self._file_locations[index]):
-            index += 1
-
-        load_success = False
-        if index < max_files:
-            load_success = self._model.load(self._file_locations[index])
-
-        backup_doc = os.path.join(self._location, self._config['identifier'] + '-backup-document.json')
-        if self._config['auto-load-backup-doc'] and not load_success:
-            load_success = self._model.load(backup_doc)
-
-        if not load_success:
-            self._model.new()
-
-        self._model.setSources(self._file_locations)
-
         self._view = ArgonViewerWidget(self._model)
-        self._view.setBackupDocument(backup_doc)
+        self._view.set_previous_documents_directory(self._previous_documents_directory())
+        self._view.load(self._file_locations, self._config['auto-load-backup-doc'])
         self._view.registerDoneExecution(self._doneExecution)
+
         self._setCurrentWidget(self._view)
+        QtWidgets.QApplication.restoreOverrideCursor()
+
+    def _previous_documents_directory(self):
+        previous_documents_directory = os.path.join(self._location, self._config["identifier"] + "-previous-docs")
+        if not os.path.isdir(previous_documents_directory):
+            os.mkdir(previous_documents_directory)
+
+        return previous_documents_directory
 
     def setPortData(self, index, dataIn):
         """

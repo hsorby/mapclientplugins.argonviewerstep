@@ -1,3 +1,7 @@
+import hashlib
+import json
+import os.path
+
 from PySide2 import QtCore, QtGui, QtWidgets
 
 from opencmiss.argon.argonlogger import ArgonLogger
@@ -16,6 +20,7 @@ from opencmiss.zincwidgets.editabletabbar import EditableTabBar
 from opencmiss.zincwidgets.viewwidget import ViewWidget
 from opencmiss.zincwidgets.scenelayoutchooserdialog import SceneLayoutChooserDialog
 
+from mapclientplugins.argonviewerstep.model.utilities import is_argon_file
 from mapclientplugins.argonviewerstep.ui.ui_argonviewerwidget import Ui_ArgonViewerWidget
 
 
@@ -29,7 +34,8 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
 
         self._location = None  # The last location/directory used by the application
 
-        self._previous_backup_document = None
+        self._previous_documents_directory = None
+        self._current_document_location = None
         self._model = model
 
         self._toolbar = self._ui.toolBar
@@ -39,7 +45,6 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
         self._registerEditors()
         self._setupViews()
         self._addDockWidgets()
-        self._onDocumentChanged()
 
         self._callback = None
 
@@ -70,8 +75,45 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
     def setZincContext(self, zincContext):
         raise NotImplementedError()
 
-    def setBackupDocument(self, name):
-        self._previous_backup_document = name
+    def set_settings_file(self, file_name):
+        self._settings_file_name = file_name
+
+    def _load_settings(self):
+        settings_file = self._settings_file_name
+        if os.path.isfile(settings_file):
+            with open(settings_file, 'r') as f:
+                self._settings.update(json.load(f))
+
+    def _save_settings(self):
+        settings_file = self._settings_file_name
+        with open(settings_file, 'w') as f:
+            json.dump(self._settings, f)
+
+    def load(self, file_locations, auto_load_previous):
+        file_location_hash = hashlib.md5(json.dumps(file_locations).encode('utf-8')).hexdigest()
+        self._current_document_location = os.path.join(self._previous_documents_directory, f"document-{file_location_hash}.json")
+
+        index = 0
+        max_files = len(file_locations)
+        while index < max_files and not is_argon_file(file_locations[index]):
+            index += 1
+
+        load_success = False
+        if index < max_files:
+            load_success = self._model.load(file_locations[index])
+
+        have_previous_document = os.path.isfile(self._current_document_location)
+        if not load_success and auto_load_previous and have_previous_document:
+            load_success = self._model.load(self._current_document_location)
+
+        if not load_success:
+            self._model.new()
+
+        self._model.setSources(file_locations)
+        self._onDocumentChanged()
+
+    def set_previous_documents_directory(self, directory):
+        self._previous_documents_directory = directory
 
     def getDependentEditors(self):
         return self._dock_widgets
@@ -272,7 +314,10 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
     def _viewTabTextEdited(self, index, value):
         document = self._model.getDocument()
         view_manager = document.getViewManager()
+        active_view_name = view_manager.getActiveView()
         view = view_manager.getView(index)
+        if active_view_name == view.getName():
+            view_manager.setActiveView(value)
         view.setName(value)
 
     def _currentViewChanged(self, index):
@@ -340,7 +385,8 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
             self._ui.viewTabWidget.setCurrentWidget(w)
 
     def _doneButtonClicked(self):
-        with open(self._previous_backup_document, 'w') as f:
+        QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+        with open(self._current_document_location, 'w') as f:
             document = self._model.getDocument()
             view_manager = document.getViewManager()
             self._ui.viewTabWidget.blockSignals(True)
@@ -360,7 +406,8 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
                         view.updateSceneviewer(r, c, sceneviewer_widget.getSceneviewer())
 
             self._ui.viewTabWidget.blockSignals(False)
-            f.write(document.serialize())
+            f.write(document.serialize(base_path=self._previous_documents_directory))
 
         ArgonLogger.closeLogger()
+        QtWidgets.QApplication.restoreOverrideCursor()
         self._callback()
