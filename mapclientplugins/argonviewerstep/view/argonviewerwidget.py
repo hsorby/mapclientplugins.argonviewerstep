@@ -250,14 +250,16 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
         """
         If we are showing the dock widget we will make it current i.e. make sure it is visible if tabbed.
         """
-        if show:
-            sender_text = self.sender().text()
-            for tab_bar in self.findChildren(QtWidgets.QTabBar):
-                for index in range(tab_bar.count()):
-                    tab_text = tab_bar.tabText(index)
-                    if tab_text == sender_text:
+        sender_text = self.sender().text()
+        for tab_bar in self.findChildren(QtWidgets.QTabBar):
+            for index in range(tab_bar.count()):
+                tab_text = tab_bar.tabText(index)
+                if tab_text == sender_text:
+                    if show:
                         tab_bar.setCurrentIndex(index)
-                        return
+                    elif not tab_bar.currentIndex() == index:
+                        self.sender().trigger()
+                    return
 
     def _getEditorAction(self, action_name):
         action = None
