@@ -1,6 +1,7 @@
 import hashlib
 import json
 import os.path
+import webbrowser
 
 from PySide2 import QtCore, QtGui, QtWidgets
 
@@ -126,6 +127,7 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
         self._dock_widgets.append(editor)
 
     def _makeConnections(self):
+        self._ui.pushButtonDocumentation.clicked.connect(self._documentationButtonClicked)
         self._ui.pushButtonDone.clicked.connect(self._doneButtonClicked)
         self._ui.viewTabWidget.tabCloseRequested.connect(self._viewTabCloseRequested)
         self._ui.viewTabWidget.currentChanged.connect(self._currentViewChanged)
@@ -383,6 +385,9 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
             view_manager.setActiveView(new_view.getName())
             w = self._create_new_view(new_view, view_manager.getZincContext())
             self._ui.viewTabWidget.setCurrentWidget(w)
+
+    def _documentationButtonClicked(self):
+        webbrowser.open("https://abi-mapping-tools.readthedocs.io/en/latest/mapclientplugins.argonviewerstep/docs/index.html")
 
     def _doneButtonClicked(self):
         QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)

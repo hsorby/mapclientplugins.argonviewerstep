@@ -33,6 +33,11 @@ class Ui_ArgonViewerWidget(object):
 
         self.horizontalLayout.addItem(self.horizontalSpacer)
 
+        self.pushButtonDocumentation = QPushButton(self.centralwidget)
+        self.pushButtonDocumentation.setObjectName(u"pushButtonDocumentation")
+
+        self.horizontalLayout.addWidget(self.pushButtonDocumentation)
+
         self.pushButtonDone = QPushButton(self.centralwidget)
         self.pushButtonDone.setObjectName(u"pushButtonDone")
 
@@ -53,6 +58,7 @@ class Ui_ArgonViewerWidget(object):
 
     def retranslateUi(self, ArgonViewerWidget):
         ArgonViewerWidget.setWindowTitle(QCoreApplication.translate("ArgonViewerWidget", u"Argon Viewer", None))
+        self.pushButtonDocumentation.setText(QCoreApplication.translate("ArgonViewerWidget", u"Online Documentation", None))
         self.pushButtonDone.setText(QCoreApplication.translate("ArgonViewerWidget", u"Done", None))
     # retranslateUi
 
