@@ -389,23 +389,24 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
         with open(self._current_document_location, 'w') as f:
             document = self._model.getDocument()
             view_manager = document.getViewManager()
-            self._ui.viewTabWidget.blockSignals(True)
-            for index in range(self._ui.viewTabWidget.count()):
-                self._ui.viewTabWidget.setCurrentIndex(index)
-                tab = self._ui.viewTabWidget.widget(index)
-                tab_layout = tab.layout()
+            if view_manager.viewCount():
+                self._ui.viewTabWidget.blockSignals(True)
+                for index in range(self._ui.viewTabWidget.count()):
+                    self._ui.viewTabWidget.setCurrentIndex(index)
+                    tab = self._ui.viewTabWidget.widget(index)
+                    tab_layout = tab.layout()
 
-                view = view_manager.getView(index)
-                view.setName(self._ui.viewTabWidget.tabText(index))
+                    view = view_manager.getView(index)
+                    view.setName(self._ui.viewTabWidget.tabText(index))
 
-                rows = tab_layout.rowCount()
-                columns = tab_layout.columnCount()
-                for r in range(rows):
-                    for c in range(columns):
-                        sceneviewer_widget = tab_layout.itemAtPosition(r, c).widget()
-                        view.updateSceneviewer(r, c, sceneviewer_widget.getSceneviewer())
+                    rows = tab_layout.rowCount()
+                    columns = tab_layout.columnCount()
+                    for r in range(rows):
+                        for c in range(columns):
+                            sceneviewer_widget = tab_layout.itemAtPosition(r, c).widget()
+                            view.updateSceneviewer(r, c, sceneviewer_widget.getSceneviewer())
 
-            self._ui.viewTabWidget.blockSignals(False)
+                self._ui.viewTabWidget.blockSignals(False)
             f.write(document.serialize(base_path=self._previous_documents_directory))
 
         ArgonLogger.closeLogger()
