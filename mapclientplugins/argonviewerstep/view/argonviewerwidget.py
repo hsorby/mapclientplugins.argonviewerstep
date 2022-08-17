@@ -412,6 +412,7 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
                             view.updateSceneviewer(r, c, sceneviewer_widget.getSceneviewer())
 
                 self._ui.viewTabWidget.blockSignals(False)
+
             f.write(document.serialize(base_path=self._previous_documents_directory))
 
         ArgonLogger.closeLogger()
