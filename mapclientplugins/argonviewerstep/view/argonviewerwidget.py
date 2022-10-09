@@ -20,6 +20,7 @@ from opencmiss.zincwidgets.addviewwidget import AddView
 from opencmiss.zincwidgets.editabletabbar import EditableTabBar
 from opencmiss.zincwidgets.viewwidget import ViewWidget
 from opencmiss.zincwidgets.loggereditorwidget import LoggerEditorWidget
+from opencmiss.zincwidgets.consoleeditorwidget import ConsoleEditorWidget
 from opencmiss.zincwidgets.scenelayoutchooserdialog import SceneLayoutChooserDialog
 
 from mapclientplugins.argonviewerstep.model.utilities import is_argon_file
@@ -139,6 +140,7 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
         self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.dockWidgetModelSources)
         self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.dockWidgetTimeEditor)
         self.tabifyDockWidget(self.dockWidgetTimeEditor, self.dockWidgetLoggerEditor)
+        self.tabifyDockWidget(self.dockWidgetLoggerEditor, self.dockWidgetConsoleEditor)
         self.tabifyDockWidget(self.dockWidgetModelSources, self.dockWidgetTessellationEditor)
         self.tabifyDockWidget(self.dockWidgetTessellationEditor, self.dockWidgetSpectrumEditor)
         self.tabifyDockWidget(self.dockWidgetSpectrumEditor, self.dockWidgetSceneEditor)
@@ -222,6 +224,14 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
         self.dockWidgetContentsLoggerEditor.setObjectName("dockWidgetContentsLoggerEditor")
         self.dockWidgetLoggerEditor.setWidget(self.dockWidgetContentsLoggerEditor)
         self.dockWidgetLoggerEditor.setHidden(True)
+
+        self.dockWidgetConsoleEditor = QtWidgets.QDockWidget(self)
+        self.dockWidgetConsoleEditor.setWindowTitle('Console Editor')
+        self.dockWidgetConsoleEditor.setObjectName("dockWidgetConsoleEditor")
+        self.dockWidgetContentsConsoleEditor = ConsoleEditorWidget()
+        self.dockWidgetContentsConsoleEditor.setObjectName("dockWidgetContentsConsoleEditor")
+        self.dockWidgetConsoleEditor.setWidget(self.dockWidgetContentsConsoleEditor)
+        self.dockWidgetConsoleEditor.setHidden(True)
         
         self.dockWidgetFieldEditor = QtWidgets.QDockWidget(self)
         self.dockWidgetFieldEditor.setWindowTitle('Field Editor')
@@ -240,6 +250,7 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
         self._registerEditor(self.dockWidgetTessellationEditor)
         self._registerEditor(self.dockWidgetTimeEditor)
         self._registerEditor(self.dockWidgetLoggerEditor)
+        self._registerEditor(self.dockWidgetConsoleEditor)
         self._registerEditor(self.dockWidgetFieldEditor)
         self._registerEditor(self.dockWidgetModelSources)
 
