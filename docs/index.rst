@@ -55,9 +55,11 @@ It includes:
 6. Scene Editor Weight;
 7. Sceneviewer Editor Weight;
 8. Field Editor Weight;
-9. Region Editor Weight.
+9. Region Editor Weight;
+10. Logger Editor Weight;
+11. Console Editor Weight.
 
-The details of these weight can be found at `Zinc Weights Documentation <https://abi-mapping-tools.readthedocs.io/en/latest/mapclientplugins.zincwidgets/docs/index.html>`_.
+The details of these weight can be found at `Zinc Weights Documentation <https://abi-mapping-tools.readthedocs.io/en/latest/opencmiss.zincwidgets/docs/index.html>`_.
 
 Install
 -------
