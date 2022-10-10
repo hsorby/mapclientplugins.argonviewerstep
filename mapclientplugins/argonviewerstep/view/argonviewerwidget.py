@@ -62,6 +62,7 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
         self.dockWidgetContentsTessellationEditor.setTessellations(document.getTessellations())
         self.dockWidgetContentsMaterialEditor.setMaterials(document.getMaterials())
         self.dockWidgetContentsTimeEditor.setZincContext(zincContext)
+        self.dockWidgetContentsConsoleEditor.setDocument(document)
 
         model_sources_model = ModelSourcesModel(document, self._model.getSources())
         self.dockWidgetContentsModelSources.setModelSourcesModel(zincRootRegion, model_sources_model)
@@ -183,7 +184,7 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
         self.dockWidgetContentsSceneEditor.setObjectName("dockWidgetContentsSceneEditor")
         self.dockWidgetSceneEditor.setWidget(self.dockWidgetContentsSceneEditor)
         self.dockWidgetSceneEditor.setHidden(True)
-        
+
         self.dockWidgetSceneviewerEditor = QtWidgets.QDockWidget(self)
         self.dockWidgetSceneviewerEditor.setWindowTitle('Sceneviewer Editor')
         self.dockWidgetSceneviewerEditor.setObjectName("dockWidgetSceneviewerEditor")
@@ -232,7 +233,7 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
         self.dockWidgetContentsConsoleEditor.setObjectName("dockWidgetContentsConsoleEditor")
         self.dockWidgetConsoleEditor.setWidget(self.dockWidgetContentsConsoleEditor)
         self.dockWidgetConsoleEditor.setHidden(True)
-        
+
         self.dockWidgetFieldEditor = QtWidgets.QDockWidget(self)
         self.dockWidgetFieldEditor.setWindowTitle('Field Editor')
         self.dockWidgetFieldEditor.setObjectName("dockWidgetFieldEditor")
