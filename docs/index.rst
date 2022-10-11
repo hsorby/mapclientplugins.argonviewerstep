@@ -43,23 +43,23 @@ Whether you use the output in a further workflow step or not, on completion of t
 Background
 ----------
 
-This **Argon Viewer**  is a bundle of **Zinc Weights**.
+This **Argon Viewer**  is a bundle of **Zinc Widgets**.
 
 It includes:
 
-1. Material Editor Weight;
-2. Model Sources Weight;
-3. Time Editor Weight;
-4. Tessellation Editor Weight;
-5. Spectrum Editor Weight;
-6. Scene Editor Weight;
-7. Sceneviewer Editor Weight;
-8. Field Editor Weight;
-9. Region Editor Weight;
-10. Logger Editor Weight;
-11. Console Editor Weight.
+1. Material Editor Widget;
+2. Model Sources Widget;
+3. Time Editor Widget;
+4. Tessellation Editor Widget;
+5. Spectrum Editor Widget;
+6. Scene Editor Widget;
+7. Sceneviewer Editor Widget;
+8. Field Editor Widget;
+9. Region Editor Widget;
+10. Logger Editor Widget;
+11. Console Editor Widget.
 
-The details of these weight can be found at `Zinc Weights Documentation <https://abi-mapping-tools.readthedocs.io/en/latest/opencmiss.zincwidgets/docs/index.html>`_.
+The details of these weight can be found at `Zinc Widgets Documentation <https://abi-mapping-tools.readthedocs.io/en/latest/opencmiss.zincwidgets/docs/index.html>`_.
 
 Install
 -------
@@ -106,7 +106,7 @@ Initial
 
    Initial **Argon Viewer** user interface after loading.
 
-The Weights tabs on the top lists the zinc weights can be used. 
+The Widgets tabs on the top lists the zinc weights can be used. 
 In the middle of the user interface is a tab widget contains views. Argon Viewer allows users to create
 multiple views and each view can have different number of sceneviewer widget. By clicking the `Add View`
 button in the middle or the green plus button on the top right, a Scene Layout Chooser Dialog will pop out
