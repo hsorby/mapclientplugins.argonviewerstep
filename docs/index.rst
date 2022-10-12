@@ -59,7 +59,7 @@ It includes:
 10. Logger Editor Widget;
 11. Console Editor Widget.
 
-The details of these weight can be found at `Zinc Widgets Documentation <https://abi-mapping-tools.readthedocs.io/en/latest/opencmiss.zincwidgets/docs/index.html>`_.
+The details of these widget can be found at `Zinc Widgets Documentation <https://abi-mapping-tools.readthedocs.io/en/latest/opencmiss.zincwidgets/docs/index.html>`_.
 
 Install
 -------
@@ -106,7 +106,7 @@ Initial
 
    Initial **Argon Viewer** user interface after loading.
 
-The Widgets tabs on the top lists the zinc weights can be used. 
+The Widgets tabs on the top lists the zinc widgets can be used. 
 In the middle of the user interface is a tab widget contains views. Argon Viewer allows users to create
 multiple views and each view can have different number of sceneviewer widget. By clicking the `Add View`
 button in the middle or the green plus button on the top right, a Scene Layout Chooser Dialog will pop out
@@ -137,7 +137,7 @@ Single View
 
    **Argon Viewer** user interface for single view.
 
-Single View is for user to focus scenes from one region. In the middle is the sceneviewer weight, and all other widgets around it are dockable.
+Single View is for user to focus scenes from one region. In the middle is the sceneviewer widget, and all other widgets around it are dockable.
 
 Multi-Views
 ^^^^^^^^^^^
