@@ -10,21 +10,21 @@ The **Argon Viewer Step** is part of the software that is used in the collection
 Overview
 --------
 
-The **Argon Viewer Step** is a general purpose visualization tool helps display and manage `Zinc` scenes. 
-It's highly relied on `Zinc Widgets` library, also can be seen as a combination of a group of `Zinc Widgets`.
+The **Argon Viewer Step** is a general purpose visualization tool that displays and manages `Zinc` scenes. 
+It uses the `Zinc Widgets` library to provide graphical user interfaces for the underlying `Zinc` actions.
 
 The input of **Argon Viewer Step** is a `Zinc library` compatible EX file, or an Argon file.
-The output of this tool is an Argon file which can be used to generate WebGL files for visualization.
+The output of this tool is an Argon file, which can be used to generate WebGL files for visualization.
 
-This document describes how to set up and use the **Argon Viewer** user interface in 
-Mapping Tools. The reading and writing process of argon document is managed by the underlying `argon library`,  together with the `Zinc library` which handles model representation and computation.
+This document describes how to set up and use the **Argon Viewer** user interface in mapping tools.
+The reading and writing process of an argon document is managed by the underlying `argon library`, together with the `Zinc library` which handles model representation and computation.
 
 Workflow Connections
 --------------------
 
-As shown in :numref:`fig-argon-viewer-step-workflow`, the **Argon Viewer Step** uses 1 inputs on the left:
+As shown in :numref:`fig-argon-viewer-step-workflow`, the **Argon Viewer Step** uses 1 input:
 
-1. A **File Chooser** to read from a `Zinc library` compatible EX files or an argon file.
+1. A **File Chooser** to read from a `Zinc library` compatible EX file or an Argon file.
 
 It produces 1 output which may be piped to other workflow steps:
 
@@ -59,7 +59,7 @@ It includes:
 10. Logger Editor Widget;
 11. Console Editor Widget.
 
-The details of these widget can be found at `Zinc Widgets Documentation <https://abi-mapping-tools.readthedocs.io/en/latest/opencmiss.zincwidgets/docs/index.html>`_.
+Detailed documentation on each of these widgets can be found at `Zinc Widgets Documentation <https://abi-mapping-tools.readthedocs.io/en/latest/opencmiss.zincwidgets/docs/index.html>`_.
 
 Install
 -------
@@ -77,23 +77,13 @@ opencmiss.zincwidgets >= 2.0
 
 opencmiss.argon >= 0.3
 
-pip install
-^^^^^^^^^^^
-
-This **Argon Viewer** can be installed from PyPi.org with the following command::
-
-  pip install mapclientplugins.argonviewerstep
-
 Usage
 -----
 
-To illustrate the use of Argon Viewer Step we will use 
-a `multi view example workflow <https://github.com/mapclient-workflows/argon-viewer-docs-example>`_ 
-(`download zip <https://github.com/mapclient-workflows/argon-viewer-docs-example/archive/refs/heads/main.zip>`_) 
-which uses basic graphic shapes data. The main input file of Argon Viewer Step in this workflow is `multi_scene.argon`, 
-with multiple model sources `sphere.exf`, `tube.exf`, `cube.exf`, `bifurcation.exf` and `heart.exfile`.
-The output of the Argon Viewer Step is the `argon_viewer-backup-document.json`, which also is the input of Argon Scene Expoter Step
-after it. This final output of this workflow are WebGL files in the `webGLOutput` folder.
+To illustrate the use of *Argon Viewer Step* we will use the `multi view example workflow <https://github.com/mapclient-workflows/argon-viewer-docs-example>`_ (`download zip <https://github.com/mapclient-workflows/argon-viewer-docs-example/archive/refs/heads/main.zip>`_), which uses five meshes to illustrate how a mutliple viewing window can be used.
+The main input file of Argon Viewer Step in this workflow is `multi_scene.argon`, with multiple model sources `sphere.exf`, `tube.exf`, `cube.exf`, `bifurcation.exf` and `heart.exfile`.
+The output of the Argon Viewer Step is the `argon_viewer-backup-document.json`, which also is the input of *Argon Scene Expoter Step* after it.
+This final output of this workflow are WebGL files in the `webGLOutput` folder.
 
 Initial
 ^^^^^^^
@@ -106,14 +96,12 @@ Initial
 
    Initial **Argon Viewer** user interface after loading.
 
-The Widgets tabs on the top lists the zinc widgets can be used. 
-In the middle of the user interface is a tab widget contains views. Argon Viewer allows users to create
-multiple views and each view can have different number of sceneviewer widget. By clicking the `Add View`
-button in the middle or the green plus button on the top right, a Scene Layout Chooser Dialog will pop out
-letting user to select layout for the view.
+The widgets tabs at the top of the central widget, lists the available zinc widgets. 
+In the middle of the user interface is the main widget where scene viewer widgets are shown.
+Argon Viewer allows the user to create multiple scene viewers and each viewer can have a different number of sceneviewer widgets.
+By clicking the `Add View` button in the middle (or the green plus button on the top right of the scene viewer widget), a *Scene Layout Chooser Dialog* will popup letting the user select a layout for the view.
 
-:numref:`fig-scene-layout-chooser` shows the Scene Layout Chooser Dialog, which can select the number 
-of sceneviewer widget in the view.
+:numref:`fig-scene-layout-chooser` shows the *Scene Layout Chooser Dialog*, which is used to select the type of scene viewer widget to add.
 
 .. _fig-scene-layout-chooser:
 
@@ -123,8 +111,8 @@ of sceneviewer widget in the view.
 
    **Scene Layout Chooser Dialog** for selecting view layout.
 
-There are two types of layout can be selected. One full layout with only one sceneviewer widget for single view, and a grid layout
-with four small sceneviewer widget for multiple views.
+There are two types of layout cthat an be selected.
+One, a full layout with only one sceneviewer widget for single view, and two, a grid layout with four small sceneviewer widgets for multiple views.
 
 Single View
 ^^^^^^^^^^^
@@ -137,7 +125,7 @@ Single View
 
    **Argon Viewer** user interface for single view.
 
-Single View is for user to focus scenes from one region. In the middle is the sceneviewer widget, and all other widgets around it are dockable.
+The *Single View* is the standard view, it contains a single sceneviewer for viewing the scene.
 
 Multi-Views
 ^^^^^^^^^^^
@@ -151,11 +139,10 @@ Multi-Views
 
    **Argon Viewer** user interface for multiple Views.
 
-Argon Viewer allows user to view multiple scenes at the same time. There will be a purple border
-instruct which sceneviewer is choosen, and other widgets such as Scene Editor widget and Sceneviewer
-Editor widget shows the infomation of the choosen sceneviewer. 
-The content of choosen sceneviewer can be edited by selecting regions in the Sceneviewer Editor widget,
-so user can view scenes from different regions or view the graph through different angle
-at the same time.
+*Multiple Views* allows the user to view multiple scenes at the same time.
+A purple border highlights the currently active scene viewer.
+The active scene viewer is the target for widgets such as the *Sceneviewer Editor*.
+The *Sceneviewer Editor* shows the current status information of the currently active scene viewer. 
+The content of the currently selected scene viewer can be edited by selecting regions in the *Sceneviewer Editor* widget, this allows the user to view scenes from different regions or view the scene from a different angle at the same time.
 
-Clicking *Done* saves the settings into an argon file then moving to the next workflow step.
+Clicking *Done* saves the current settings into an Argon file before moving to the next workflow step.
