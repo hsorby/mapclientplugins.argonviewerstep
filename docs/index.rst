@@ -111,7 +111,7 @@ By clicking the `Add View` button in the middle (or the green plus button on the
 
    **Scene Layout Chooser Dialog** for selecting view layout.
 
-There are two types of layout cthat an be selected.
+There are two types of layout that an be selected.
 One, a full layout with only one sceneviewer widget for single view, and two, a grid layout with four small sceneviewer widgets for multiple views.
 
 Single View
