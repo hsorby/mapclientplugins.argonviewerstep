@@ -5,7 +5,7 @@ import webbrowser
 
 from PySide2 import QtCore, QtGui, QtWidgets
 
-from opencmiss.argon.argonlogger import ArgonLogger
+from cmlibs.argon.argonlogger import ArgonLogger
 
 from opencmiss.zincwidgets.materialeditorwidget import MaterialEditorWidget
 from opencmiss.zincwidgets.regioneditorwidget import RegionEditorWidget

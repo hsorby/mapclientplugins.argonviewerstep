@@ -4,8 +4,8 @@ Geometric fit model adding visualisations to github.com/ABI-Software/scaffoldfit
 import os
 import json
 
-from opencmiss.argon.argondocument import ArgonDocument
-from opencmiss.argon.argonlogger import ArgonLogger
+from cmlibs.argon.argondocument import ArgonDocument
+from cmlibs.argon.argonlogger import ArgonLogger
 from opencmiss.zinc.result import RESULT_OK
 from mapclientplugins.argonviewerstep.model.utilities import is_argon_file, is_exf_file
 
