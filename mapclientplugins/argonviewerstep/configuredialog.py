@@ -90,4 +90,4 @@ class ConfigureDialog(QtWidgets.QDialog):
         """
         self._previousIdentifier = config['identifier']
         self._ui.lineEditIdentifier.setText(config['identifier'])
-        self._ui.checkBoxAutoLoadBackupDocument.setChecked(QtCore.Qt.Checked if config['auto-load-backup-doc'] else QtCore.Qt.Unchecked)
+        self._ui.checkBoxAutoLoadBackupDocument.setChecked(True if config['auto-load-backup-doc'] else False)
