@@ -21,7 +21,7 @@ def is_argon_file(filename):
         return False
 
     # continue to read legacy OpenCMISS-Argon document
-    if '-Argon Version' not in d:
+    if ('OpenCMISS-Argon Version' not in d) and ('CMLibs-Argon Version' not in d):
         return False
 
     return True
