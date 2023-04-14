@@ -7,21 +7,21 @@ from PySide2 import QtCore, QtGui, QtWidgets
 
 from cmlibs.argon.argonlogger import ArgonLogger
 
-from opencmiss.zincwidgets.materialeditorwidget import MaterialEditorWidget
-from opencmiss.zincwidgets.regioneditorwidget import RegionEditorWidget
-from opencmiss.zincwidgets.sceneviewereditorwidget import SceneviewerEditorWidget
-from opencmiss.zincwidgets.sceneeditorwidget import SceneEditorWidget
-from opencmiss.zincwidgets.spectrumeditorwidget import SpectrumEditorWidget
-from opencmiss.zincwidgets.tessellationeditorwidget import TessellationEditorWidget
-from opencmiss.zincwidgets.timeeditorwidget import TimeEditorWidget
-from opencmiss.zincwidgets.fieldlisteditorwidget import FieldListEditorWidget
-from opencmiss.zincwidgets.modelsourceseditorwidget import ModelSourcesEditorWidget, ModelSourcesModel
-from opencmiss.zincwidgets.addviewwidget import AddView
-from opencmiss.zincwidgets.editabletabbar import EditableTabBar
-from opencmiss.zincwidgets.viewwidget import ViewWidget
-from opencmiss.zincwidgets.loggereditorwidget import LoggerEditorWidget
-from opencmiss.zincwidgets.consoleeditorwidget import ConsoleEditorWidget
-from opencmiss.zincwidgets.scenelayoutchooserdialog import SceneLayoutChooserDialog
+from cmlibs.widgets.materialeditorwidget import MaterialEditorWidget
+from cmlibs.widgets.regioneditorwidget import RegionEditorWidget
+from cmlibs.widgets.sceneviewereditorwidget import SceneviewerEditorWidget
+from cmlibs.widgets.sceneeditorwidget import SceneEditorWidget
+from cmlibs.widgets.spectrumeditorwidget import SpectrumEditorWidget
+from cmlibs.widgets.tessellationeditorwidget import TessellationEditorWidget
+from cmlibs.widgets.timeeditorwidget import TimeEditorWidget
+from cmlibs.widgets.fieldlisteditorwidget import FieldListEditorWidget
+from cmlibs.widgets.modelsourceseditorwidget import ModelSourcesEditorWidget, ModelSourcesModel
+from cmlibs.widgets.addviewwidget import AddView
+from cmlibs.widgets.editabletabbar import EditableTabBar
+from cmlibs.widgets.viewwidget import ViewWidget
+from cmlibs.widgets.loggereditorwidget import LoggerEditorWidget
+from cmlibs.widgets.consoleeditorwidget import ConsoleEditorWidget
+from cmlibs.widgets.scenelayoutchooserdialog import SceneLayoutChooserDialog
 
 from mapclientplugins.argonviewerstep.model.utilities import is_argon_file
 from mapclientplugins.argonviewerstep.ui.ui_argonviewerwidget import Ui_ArgonViewerWidget
