@@ -1,6 +1,6 @@
 import webbrowser
 
-from PySide2 import QtCore, QtWidgets
+from PySide6 import QtCore, QtWidgets
 from mapclientplugins.argonviewerstep.ui_configuredialog import Ui_ConfigureDialog
 
 INVALID_STYLE_SHEET = 'background-color: rgba(239, 0, 0, 50)'
@@ -90,4 +90,4 @@ class ConfigureDialog(QtWidgets.QDialog):
         """
         self._previousIdentifier = config['identifier']
         self._ui.lineEditIdentifier.setText(config['identifier'])
-        self._ui.checkBoxAutoLoadBackupDocument.setChecked(QtCore.Qt.Checked if config['auto-load-backup-doc'] else QtCore.Qt.Unchecked)
+        self._ui.checkBoxAutoLoadBackupDocument.setChecked(True if config['auto-load-backup-doc'] else False)

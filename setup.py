@@ -39,7 +39,8 @@ requires = [
     'cmlibs.zinc >= 3.99',
     'cmlibs.widgets >= 2.3',
     'cmlibs.argon >= 0.4',
-    'PySide2']  # minimal requirements listing
+    'PySide6']  # minimal requirements listing
+
 source_license = readfile("LICENSE")
 
 
