@@ -69,13 +69,13 @@ Requirements
 
 python >= 3.6
 
-mapclient >= 0.16
+mapclient >= 0.18
 
-opencmiss.zinc >= 3.6
+cmlibs.zinc >= 3.99
 
-opencmiss.zincwidgets >= 2.0
+cmlibs.widgets >= 2.3
 
-opencmiss.argon >= 0.3
+cmlibs.argon >= 0.4
 
 Usage
 -----

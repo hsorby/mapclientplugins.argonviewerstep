@@ -1,8 +1,8 @@
 import json
 import os
 
-from opencmiss.zinc.context import Context
-from opencmiss.zinc.result import RESULT_OK
+from cmlibs.zinc.context import Context
+from cmlibs.zinc.result import RESULT_OK
 
 
 def is_argon_file(filename):
@@ -20,7 +20,8 @@ def is_argon_file(filename):
     except json.JSONDecodeError:
         return False
 
-    if 'OpenCMISS-Argon Version' not in d:
+    # continue to read legacy OpenCMISS-Argon document
+    if ('OpenCMISS-Argon Version' not in d) and ('CMLibs-Argon Version' not in d):
         return False
 
     return True
