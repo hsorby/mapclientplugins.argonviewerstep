@@ -8,7 +8,6 @@ from PySide6 import QtGui, QtWidgets, QtCore
 
 from mapclient.mountpoints.workflowstep import WorkflowStepMountPoint
 from mapclientplugins.argonviewerstep.configuredialog import ConfigureDialog
-from mapclientplugins.argonviewerstep.model.utilities import is_argon_file
 from mapclientplugins.argonviewerstep.view.argonviewerwidget import ArgonViewerWidget
 from mapclientplugins.argonviewerstep.model.argonviewermodel import ArgonViewerModel
 
@@ -50,6 +49,7 @@ class ArgonViewerStep(WorkflowStepMountPoint):
         self._model = ArgonViewerModel()
         self._view = ArgonViewerWidget(self._model)
         self._view.set_previous_documents_directory(self._previous_documents_directory())
+        self._view.set_location(self._location)
         self._view.load(self._file_locations, self._config['auto-load-backup-doc'])
         self._view.registerDoneExecution(self._doneExecution)
 

@@ -36,9 +36,10 @@ readme = readfile("README.rst", split=True)[3:]  # skip title
 # For requirements not hosted on PyPi place listings
 # into the 'requirements.txt' file.
 requires = [
-    'cmlibs.zinc >= 3.99',
-    'cmlibs.widgets >= 2.3',
-    'cmlibs.argon >= 0.4',
+    'cmlibs.argon',
+    'cmlibs.utils',
+    'cmlibs.widgets',
+    'cmlibs.zinc',
     'PySide6']  # minimal requirements listing
 
 source_license = readfile("LICENSE")

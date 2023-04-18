@@ -1,6 +1,7 @@
 import hashlib
 import json
 import os.path
+import pathlib
 import webbrowser
 
 from PySide6 import QtCore, QtGui, QtWidgets
@@ -93,8 +94,16 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
         with open(settings_file, 'w') as f:
             json.dump(self._settings, f)
 
+    def set_location(self, location):
+        self._location = location
+
     def load(self, file_locations, auto_load_previous):
-        file_location_hash = hashlib.md5(json.dumps(file_locations).encode('utf-8')).hexdigest()
+        print("================")
+        print(file_locations)
+        normalised_file_locations = [pathlib.PureWindowsPath(os.path.relpath(file_location, self._previous_documents_directory)).as_posix() for file_location in file_locations]
+        print(json.dumps(normalised_file_locations).encode('utf-8'))
+        file_location_hash = hashlib.md5(json.dumps(normalised_file_locations).encode('utf-8')).hexdigest()
+        print(file_location_hash)
         self._current_document_location = os.path.join(self._previous_documents_directory, f"document-{file_location_hash}.json")
 
         index = 0
@@ -107,6 +116,10 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
             load_success = self._model.load(file_locations[index])
 
         have_previous_document = os.path.isfile(self._current_document_location)
+        print(load_success)
+        print(auto_load_previous)
+        print(have_previous_document)
+        print(self._current_document_location)
         if not load_success and auto_load_previous and have_previous_document:
             load_success = self._model.load(self._current_document_location)
 
