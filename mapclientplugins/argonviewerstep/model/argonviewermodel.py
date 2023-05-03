@@ -6,8 +6,9 @@ import json
 
 from cmlibs.argon.argondocument import ArgonDocument
 from cmlibs.argon.argonlogger import ArgonLogger
+from cmlibs.argon.utilities import is_argon_file
 from cmlibs.zinc.result import RESULT_OK
-from mapclientplugins.argonviewerstep.model.utilities import is_argon_file, is_exf_file
+from mapclientplugins.argonviewerstep.model.utilities import is_exf_file
 
 
 class ArgonViewerModel(object):

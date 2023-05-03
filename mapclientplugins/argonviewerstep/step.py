@@ -8,7 +8,6 @@ from PySide6 import QtGui, QtWidgets, QtCore
 
 from mapclient.mountpoints.workflowstep import WorkflowStepMountPoint
 from mapclientplugins.argonviewerstep.configuredialog import ConfigureDialog
-from mapclientplugins.argonviewerstep.model.utilities import is_argon_file
 from mapclientplugins.argonviewerstep.view.argonviewerwidget import ArgonViewerWidget
 from mapclientplugins.argonviewerstep.model.argonviewermodel import ArgonViewerModel
 
