@@ -6,6 +6,7 @@ import webbrowser
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from cmlibs.argon.argonlogger import ArgonLogger
+from cmlibs.argon.utilities import is_argon_file
 
 from cmlibs.widgets.materialeditorwidget import MaterialEditorWidget
 from cmlibs.widgets.regioneditorwidget import RegionEditorWidget
@@ -23,7 +24,6 @@ from cmlibs.widgets.loggereditorwidget import LoggerEditorWidget
 from cmlibs.widgets.consoleeditorwidget import ConsoleEditorWidget
 from cmlibs.widgets.scenelayoutchooserdialog import SceneLayoutChooserDialog
 
-from mapclientplugins.argonviewerstep.model.utilities import is_argon_file
 from mapclientplugins.argonviewerstep.ui.ui_argonviewerwidget import Ui_ArgonViewerWidget
 
 
