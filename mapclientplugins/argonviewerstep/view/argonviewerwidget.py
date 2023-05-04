@@ -1,6 +1,7 @@
 import hashlib
 import json
 import os.path
+import pathlib
 import webbrowser
 
 from PySide6 import QtCore, QtGui, QtWidgets
@@ -93,8 +94,12 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
         with open(settings_file, 'w') as f:
             json.dump(self._settings, f)
 
+    def set_location(self, location):
+        self._location = location
+
     def load(self, file_locations, auto_load_previous):
-        file_location_hash = hashlib.md5(json.dumps(file_locations).encode('utf-8')).hexdigest()
+        normalised_file_locations = [pathlib.PureWindowsPath(os.path.relpath(file_location, self._previous_documents_directory)).as_posix() for file_location in file_locations]
+        file_location_hash = hashlib.md5(json.dumps(normalised_file_locations).encode('utf-8')).hexdigest()
         self._current_document_location = os.path.join(self._previous_documents_directory, f"document-{file_location_hash}.json")
 
         index = 0
@@ -413,8 +418,8 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
         webbrowser.open("https://abi-mapping-tools.readthedocs.io/en/latest/mapclientplugins.argonviewerstep/docs/index.html")
 
     def _doneButtonClicked(self):
-        QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
-        with open(self._current_document_location, 'w') as f:
+        QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.CursorShape.WaitCursor)
+        try:
             document = self._model.getDocument()
             view_manager = document.getViewManager()
             if view_manager.viewCount():
@@ -436,8 +441,11 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
 
                 self._ui.viewTabWidget.blockSignals(False)
 
-            f.write(document.serialize(base_path=self._previous_documents_directory))
+            with open(self._current_document_location, 'w') as f:
+                f.write(document.serialize(base_path=self._previous_documents_directory))
 
-        ArgonLogger.closeLogger()
-        QtWidgets.QApplication.restoreOverrideCursor()
+        finally:
+            ArgonLogger.closeLogger()
+            QtWidgets.QApplication.restoreOverrideCursor()
+
         self._callback()
