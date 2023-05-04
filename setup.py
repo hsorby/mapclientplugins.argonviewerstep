@@ -37,7 +37,7 @@ readme = readfile("README.rst", split=True)[3:]  # skip title
 # into the 'requirements.txt' file.
 requires = [
     'cmlibs.argon',
-    'cmlibs.utils',
+    'cmlibs.utils >= 0.5.1',
     'cmlibs.widgets',
     'cmlibs.zinc',
     'PySide6']  # minimal requirements listing
