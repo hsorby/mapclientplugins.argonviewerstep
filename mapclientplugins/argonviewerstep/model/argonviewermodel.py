@@ -1,8 +1,10 @@
 """
 Geometric fit model adding visualisations to github.com/ABI-Software/scaffoldfitter
 """
+import hashlib
 import os
 import json
+import pathlib
 
 from cmlibs.argon.argondocument import ArgonDocument
 from cmlibs.argon.argonlogger import ArgonLogger
@@ -20,6 +22,8 @@ class ArgonViewerModel(object):
         """
         """
         self._document = None
+        self._previous_documents_directory = None
+        self._current_document_location = None
         self._file_sources = []
 
     def setSources(self, sources):
@@ -27,6 +31,23 @@ class ArgonViewerModel(object):
 
     def getSources(self):
         return self._file_sources
+
+    def getCurrentDocumentSettingsFilename(self):
+        return os.path.join(self._previous_documents_directory, "current-document-settings.json")
+
+    def defineCurrentDocumentationLocation(self, file_locations):
+        normalised_file_locations = [pathlib.PureWindowsPath(os.path.relpath(file_location, self._previous_documents_directory)).as_posix() for file_location in file_locations]
+        file_location_hash = hashlib.md5(json.dumps(normalised_file_locations).encode('utf-8')).hexdigest()
+        self._current_document_location = os.path.join(self._previous_documents_directory, f"document-{file_location_hash}.json")
+
+    def getCurrentDocumentLocation(self):
+        return self._current_document_location
+
+    def setPreviousDocumentsDirectory(self, directory):
+        self._previous_documents_directory = directory
+
+    def getPreviousDocumentsDirectory(self):
+        return self._previous_documents_directory
 
     def load(self, filename):
         """

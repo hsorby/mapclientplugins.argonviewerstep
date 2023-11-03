@@ -1,7 +1,5 @@
-import hashlib
 import json
 import os.path
-import pathlib
 import webbrowser
 
 from PySide6 import QtCore, QtGui, QtWidgets
@@ -32,14 +30,14 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
 
     def __init__(self, model, parent=None):
         super(ArgonViewerWidget, self).__init__(parent)
+        self._dock_widgets = []
+        self._settings = {}
         self._ui = Ui_ArgonViewerWidget()
         self._ui.setupUi(self)
         self._ui.viewTabWidget.setTabBar(EditableTabBar(self.parentWidget()))
 
         self._location = None  # The last location/directory used by the application
 
-        self._previous_documents_directory = None
-        self._current_document_location = None
         self._model = model
 
         self._toolbar = self._ui.toolBar
@@ -84,12 +82,14 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
         self._settings_file_name = file_name
 
     def _load_settings(self):
+        print('========== load ==========')
         settings_file = self._settings_file_name
         if os.path.isfile(settings_file):
             with open(settings_file, 'r') as f:
                 self._settings.update(json.load(f))
 
     def _save_settings(self):
+        print('========== save ==========')
         settings_file = self._settings_file_name
         with open(settings_file, 'w') as f:
             json.dump(self._settings, f)
@@ -98,9 +98,7 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
         self._location = location
 
     def load(self, file_locations, auto_load_previous):
-        normalised_file_locations = [pathlib.PureWindowsPath(os.path.relpath(file_location, self._previous_documents_directory)).as_posix() for file_location in file_locations]
-        file_location_hash = hashlib.md5(json.dumps(normalised_file_locations).encode('utf-8')).hexdigest()
-        self._current_document_location = os.path.join(self._previous_documents_directory, f"document-{file_location_hash}.json")
+        current_document_location = self._model.getCurrentDocumentLocation()
 
         index = 0
         max_files = len(file_locations)
@@ -111,18 +109,15 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
         if index < max_files:
             load_success = self._model.load(file_locations[index])
 
-        have_previous_document = os.path.isfile(self._current_document_location)
+        have_previous_document = os.path.isfile(current_document_location)
         if not load_success and auto_load_previous and have_previous_document:
-            load_success = self._model.load(self._current_document_location)
+            load_success = self._model.load(current_document_location)
 
         if not load_success:
             self._model.new()
 
         self._model.setSources(file_locations)
         self._onDocumentChanged()
-
-    def set_previous_documents_directory(self, directory):
-        self._previous_documents_directory = directory
 
     def getDependentEditors(self):
         return self._dock_widgets
@@ -441,8 +436,16 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
 
                 self._ui.viewTabWidget.blockSignals(False)
 
-            with open(self._current_document_location, 'w') as f:
-                f.write(document.serialize(base_path=self._previous_documents_directory))
+            current_document_location = self._model.getCurrentDocumentLocation()
+            document_settings = {
+                'current-document-name': os.path.join(os.path.relpath(os.path.dirname(current_document_location), self._location), os.path.basename(current_document_location)),
+            }
+
+            with open(self._model.getCurrentDocumentSettingsFilename(), 'w') as f:
+                json.dump(document_settings, f)
+
+            with open(current_document_location, 'w') as f:
+                f.write(document.serialize(base_path=os.path.dirname(current_document_location)))
 
         finally:
             ArgonLogger.closeLogger()

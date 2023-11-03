@@ -76,11 +76,10 @@ class ConfigureDialog(QtWidgets.QDialog):
         identifier over the whole of the workflow.
         """
         self._previousIdentifier = self._ui.lineEditIdentifier.text()
-        config = {
+        return {
             'identifier': self._ui.lineEditIdentifier.text(),
             'auto-load-backup-doc': self._ui.checkBoxAutoLoadBackupDocument.isChecked(),
         }
-        return config
 
     def setConfig(self, config):
         """

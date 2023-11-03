@@ -37,24 +37,36 @@ class ArgonViewerStep(WorkflowStepMountPoint):
                       'http://physiomeproject.org/workflow/1.0/rdf-schema#provides',
                       'https://opencmiss.org/1.0/rdf-schema#ArgonDocument'))
         # Config:
-        self._config = {'identifier': '', 'auto-load-backup-doc': True,}
+        self._config = {
+            'identifier': '',
+            'auto-load-backup-doc': True,
+        }
 
         # Port data:
         self._file_locations = None  # file_location
         self._model = None
         self._view = None
 
-    def execute(self):
-        QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+    def _setup_model(self):
         self._model = ArgonViewerModel()
-        self._view = ArgonViewerWidget(self._model)
-        self._view.set_previous_documents_directory(self._previous_documents_directory())
-        self._view.set_location(self._location)
-        self._view.load(self._file_locations, self._config['auto-load-backup-doc'])
-        self._view.registerDoneExecution(self._doneExecution)
+        self._model.setPreviousDocumentsDirectory(self._previous_documents_directory())
 
-        self._setCurrentWidget(self._view)
-        QtWidgets.QApplication.restoreOverrideCursor()
+    def execute(self):
+        QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.CursorShape.WaitCursor)
+        try:
+            self._setup_model()
+            print('what I want:', 'document-167cd16dcaa03c1750640720ddb96dde.json')
+            self._model.defineCurrentDocumentationLocation(self._file_locations)
+            print(self._file_locations)
+            print('what I actually have:', self._model._current_document_location)
+            self._view = ArgonViewerWidget(self._model)
+            self._view.set_location(self._location)
+            self._view.load(self._file_locations, self._config['auto-load-backup-doc'])
+            self._view.registerDoneExecution(self._doneExecution)
+
+            self._setCurrentWidget(self._view)
+        finally:
+            QtWidgets.QApplication.restoreOverrideCursor()
 
     def _previous_documents_directory(self):
         previous_documents_directory = os.path.join(self._location, self._config["identifier"] + "-previous-docs")
@@ -139,3 +151,12 @@ class ArgonViewerStep(WorkflowStepMountPoint):
         d.identifierOccursCount = self._identifierOccursCount
         d.setConfig(self._config)
         self._configured = d.validate()
+
+    def getAdditionalConfigFiles(self):
+        if self._model is None:
+            self._setup_model()
+
+        with open(self._model.getCurrentDocumentSettingsFilename()) as f:
+            settings = json.load(f)
+
+        return [settings['current-document-name']]
