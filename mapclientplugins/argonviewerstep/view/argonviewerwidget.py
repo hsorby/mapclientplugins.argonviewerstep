@@ -452,3 +452,7 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
             QtWidgets.QApplication.restoreOverrideCursor()
 
         self._callback()
+
+    def clear_current_document_settings(self):
+        with open(self._model.getCurrentDocumentSettingsFilename(), 'w') as f:
+            json.dump({}, f)

@@ -55,14 +55,12 @@ class ArgonViewerStep(WorkflowStepMountPoint):
         QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.CursorShape.WaitCursor)
         try:
             self._setup_model()
-            print('what I want:', 'document-167cd16dcaa03c1750640720ddb96dde.json')
             self._model.defineCurrentDocumentationLocation(self._file_locations)
-            print(self._file_locations)
-            print('what I actually have:', self._model._current_document_location)
             self._view = ArgonViewerWidget(self._model)
             self._view.set_location(self._location)
             self._view.load(self._file_locations, self._config['auto-load-backup-doc'])
             self._view.registerDoneExecution(self._doneExecution)
+            self._view.clear_current_document_settings()
 
             self._setCurrentWidget(self._view)
         finally:
