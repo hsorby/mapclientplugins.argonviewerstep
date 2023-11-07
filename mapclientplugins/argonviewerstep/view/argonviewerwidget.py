@@ -138,8 +138,8 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
         tab_bar.tabTextEdited.connect(self._viewTabTextEdited)
 
     def _addDockWidgets(self):
-        self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.dockWidgetModelSources)
-        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.dockWidgetTimeEditor)
+        self.addDockWidget(QtCore.Qt.DockWidgetArea.LeftDockWidgetArea, self.dockWidgetModelSources)
+        self.addDockWidget(QtCore.Qt.DockWidgetArea.BottomDockWidgetArea, self.dockWidgetTimeEditor)
         self.tabifyDockWidget(self.dockWidgetTimeEditor, self.dockWidgetLoggerEditor)
         self.tabifyDockWidget(self.dockWidgetLoggerEditor, self.dockWidgetConsoleEditor)
         self.tabifyDockWidget(self.dockWidgetModelSources, self.dockWidgetTessellationEditor)
@@ -352,7 +352,7 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
         self._current_sceneviewer_changed()
 
     def _setupViews(self):
-        icon = QtGui.QIcon(":/zincwidgets/images/icons/list-add-icon.png")
+        icon = QtGui.QIcon(":/widgets/images/icons/list-add-icon.png")
         btn = QtWidgets.QToolButton()
         btn.setStyleSheet("border-radius: 0.75em; border-width: 1px; border-style: solid; border-color: dark-grey;"
                           " background-color: grey; min-width: 1.5em; min-height: 1.5em; margin-right: 1em;")
