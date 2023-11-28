@@ -19,7 +19,7 @@ from cmlibs.widgets.modelsourceseditorwidget import ModelSourcesEditorWidget, Mo
 from cmlibs.widgets.addviewwidget import AddView
 from cmlibs.widgets.editabletabbar import EditableTabBar
 from cmlibs.widgets.viewwidget import ViewWidget
-from cmlibs.widgets.loggereditorwidget import LoggerEditorWidget
+from cmlibs.widgets.logviewerwidget import LogViewerWidget
 from cmlibs.widgets.consoleeditorwidget import ConsoleEditorWidget
 from cmlibs.widgets.scenelayoutchooserdialog import SceneLayoutChooserDialog
 
@@ -221,7 +221,7 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
         self.dockWidgetLoggerEditor = QtWidgets.QDockWidget(self)
         self.dockWidgetLoggerEditor.setWindowTitle('Logger Editor')
         self.dockWidgetLoggerEditor.setObjectName("dockWidgetLoggerEditor")
-        self.dockWidgetContentsLoggerEditor = LoggerEditorWidget()
+        self.dockWidgetContentsLoggerEditor = LogViewerWidget()
         self.dockWidgetContentsLoggerEditor.setObjectName("dockWidgetContentsLoggerEditor")
         self.dockWidgetLoggerEditor.setWidget(self.dockWidgetContentsLoggerEditor)
         self.dockWidgetLoggerEditor.setHidden(True)
