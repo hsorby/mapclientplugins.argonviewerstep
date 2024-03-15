@@ -432,7 +432,7 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
                     for r in range(rows):
                         for c in range(columns):
                             sceneviewer_widget = tab_layout.itemAtPosition(r, c).widget()
-                            view.updateSceneviewer(r, c, sceneviewer_widget.getSceneviewer())
+                            view.updateSceneviewer(r, c, sceneviewer_widget.get_zinc_sceneviewer())
 
                 self._ui.viewTabWidget.blockSignals(False)
 
