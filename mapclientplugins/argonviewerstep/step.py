@@ -7,16 +7,14 @@ import os.path
 from PySide6 import QtGui, QtWidgets, QtCore
 
 from mapclient.mountpoints.workflowstep import WorkflowStepMountPoint
+from mapclient.settings.general import get_configuration_file
+
 from mapclientplugins.argonviewerstep.configuredialog import ConfigureDialog
 from mapclientplugins.argonviewerstep.view.argonviewerwidget import ArgonViewerWidget
 from mapclientplugins.argonviewerstep.model.argonviewermodel import ArgonViewerModel
 
 
 class ArgonViewerStep(WorkflowStepMountPoint):
-    """
-    Skeleton step which is intended to be a helpful starting point
-    for new steps.
-    """
 
     def __init__(self, location):
         super(ArgonViewerStep, self).__init__('Argon Viewer', location)
@@ -54,6 +52,8 @@ class ArgonViewerStep(WorkflowStepMountPoint):
 
     def _update_visualisation_doc(self, visualisation_doc):
         self._config['visualisation-doc'] = visualisation_doc
+        with open(get_configuration_file(self._location, self._config['identifier']), 'w') as f:
+            f.write(self.serialize())
 
     def execute(self):
         QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.CursorShape.WaitCursor)
@@ -156,7 +156,5 @@ class ArgonViewerStep(WorkflowStepMountPoint):
     def getAdditionalConfigFiles(self):
         if self._model is None:
             self._setup_model()
-
-        print('config:', self._config)
 
         return [self._model.getCurrentDocumentLocation()]

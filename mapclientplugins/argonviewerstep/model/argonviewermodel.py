@@ -1,10 +1,5 @@
-"""
-Geometric fit model adding visualisations to github.com/ABI-Software/scaffoldfitter
-"""
-import hashlib
 import os
 import json
-import pathlib
 
 from cmlibs.argon.argondocument import ArgonDocument
 from cmlibs.argon.argonlogger import ArgonLogger
@@ -14,17 +9,13 @@ from cmlibs.utils.zinc.general import is_exf_file
 
 
 def _define_current_document_name():
-    return f'document-{os.urandom(4).hex()}'
+    return f'document-{os.urandom(4).hex()}.json'
 
 
 class ArgonViewerModel(object):
-    """
-    Geometric fit model adding visualisations to github.com/ABI-Software/scaffoldfitter
-    """
 
     def __init__(self, visualisation_doc):
-        """
-        """
+        self._settings = None
         self._document = None
         self._previous_documents_directory = None
         self._current_document_name = visualisation_doc if visualisation_doc else _define_current_document_name()
