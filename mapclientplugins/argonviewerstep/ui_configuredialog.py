@@ -62,6 +62,7 @@ class Ui_ConfigureDialog(object):
         self.comboBoxVisualisationDocuments = QComboBox(self.configGroupBox)
         self.comboBoxVisualisationDocuments.setObjectName(u"comboBoxVisualisationDocuments")
         self.comboBoxVisualisationDocuments.setEditable(True)
+        self.comboBoxVisualisationDocuments.setInsertPolicy(QComboBox.InsertAtCurrent)
 
         self.formLayout.setWidget(2, QFormLayout.FieldRole, self.comboBoxVisualisationDocuments)
 
@@ -87,6 +88,7 @@ class Ui_ConfigureDialog(object):
         self.labelIdentifier.setText(QCoreApplication.translate("ConfigureDialog", u"Identifier:  ", None))
         self.labelAutoLoadBackupDocument.setText(QCoreApplication.translate("ConfigureDialog", u"Auto load visualisation document:", None))
         self.checkBoxAutoLoadVisualisationDocument.setText("")
+        self.comboBoxVisualisationDocuments.setPlaceholderText(QCoreApplication.translate("ConfigureDialog", u"<new document>", None))
         self.label.setText(QCoreApplication.translate("ConfigureDialog", u"Visualisation document:", None))
     # retranslateUi
 
