@@ -147,6 +147,7 @@ class ArgonViewerStep(WorkflowStepMountPoint):
         :param string: JSON representation of the configuration in a string.
         """
         self._config.update(json.loads(string))
+        self._setup_model()
 
         d = ConfigureDialog()
         d.identifierOccursCount = self._identifierOccursCount
