@@ -79,7 +79,6 @@ class ArgonViewerModel(object):
     def new(self):
         self._document = ArgonDocument()
         self._document.initialiseVisualisationContents()
-        # self._document.
 
     def getContext(self):
         if self._document:

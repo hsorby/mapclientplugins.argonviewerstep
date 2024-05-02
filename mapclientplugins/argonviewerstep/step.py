@@ -3,6 +3,7 @@ MAP Client Plugin Step
 """
 import json
 import os.path
+import pathlib
 
 from PySide6 import QtGui, QtWidgets, QtCore
 
@@ -87,7 +88,7 @@ class ArgonViewerStep(WorkflowStepMountPoint):
         if not isinstance(dataIn, list):
             dataIn = [dataIn]
 
-        self._file_locations = dataIn  # file_location
+        self._file_locations = [pathlib.PureWindowsPath(p).as_posix() for p in dataIn]  # file_location
 
     def getPortData(self, index):
         """
