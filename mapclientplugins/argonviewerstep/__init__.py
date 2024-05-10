@@ -3,7 +3,7 @@
 MAP Client Plugin
 """
 
-__version__ = '0.4.0'
+__version__ = '0.4.1'
 __author__ = 'Hugh Sorby'
 __stepname__ = 'ArgonViewer'
 __location__ = 'https://github.com/mapclient-plugins/mapclientplugins.argonviewerstep.git'
