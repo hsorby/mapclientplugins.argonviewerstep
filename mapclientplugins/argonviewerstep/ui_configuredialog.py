@@ -29,8 +29,8 @@ class Ui_ConfigureDialog(object):
         self.gridLayout.setObjectName(u"gridLayout")
         self.buttonBox = QDialogButtonBox(ConfigureDialog)
         self.buttonBox.setObjectName(u"buttonBox")
-        self.buttonBox.setOrientation(Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QDialogButtonBox.Cancel|QDialogButtonBox.Ok)
+        self.buttonBox.setOrientation(Qt.Orientation.Horizontal)
+        self.buttonBox.setStandardButtons(QDialogButtonBox.StandardButton.Cancel|QDialogButtonBox.StandardButton.Ok)
 
         self.gridLayout.addWidget(self.buttonBox, 1, 0, 1, 1)
 
@@ -51,25 +51,35 @@ class Ui_ConfigureDialog(object):
         self.labelAutoLoadBackupDocument = QLabel(self.configGroupBox)
         self.labelAutoLoadBackupDocument.setObjectName(u"labelAutoLoadBackupDocument")
 
-        self.formLayout.setWidget(1, QFormLayout.LabelRole, self.labelAutoLoadBackupDocument)
+        self.formLayout.setWidget(2, QFormLayout.LabelRole, self.labelAutoLoadBackupDocument)
 
         self.checkBoxAutoLoadVisualisationDocument = QCheckBox(self.configGroupBox)
         self.checkBoxAutoLoadVisualisationDocument.setObjectName(u"checkBoxAutoLoadVisualisationDocument")
         self.checkBoxAutoLoadVisualisationDocument.setChecked(True)
 
-        self.formLayout.setWidget(1, QFormLayout.FieldRole, self.checkBoxAutoLoadVisualisationDocument)
+        self.formLayout.setWidget(2, QFormLayout.FieldRole, self.checkBoxAutoLoadVisualisationDocument)
 
         self.comboBoxVisualisationDocuments = QComboBox(self.configGroupBox)
         self.comboBoxVisualisationDocuments.setObjectName(u"comboBoxVisualisationDocuments")
         self.comboBoxVisualisationDocuments.setEditable(True)
-        self.comboBoxVisualisationDocuments.setInsertPolicy(QComboBox.InsertAtCurrent)
+        self.comboBoxVisualisationDocuments.setInsertPolicy(QComboBox.InsertPolicy.InsertAtCurrent)
 
-        self.formLayout.setWidget(2, QFormLayout.FieldRole, self.comboBoxVisualisationDocuments)
+        self.formLayout.setWidget(3, QFormLayout.FieldRole, self.comboBoxVisualisationDocuments)
 
-        self.label = QLabel(self.configGroupBox)
-        self.label.setObjectName(u"label")
+        self.labelVisualisationDocument = QLabel(self.configGroupBox)
+        self.labelVisualisationDocument.setObjectName(u"labelVisualisationDocument")
 
-        self.formLayout.setWidget(2, QFormLayout.LabelRole, self.label)
+        self.formLayout.setWidget(3, QFormLayout.LabelRole, self.labelVisualisationDocument)
+
+        self.checkBoxAutoDone = QCheckBox(self.configGroupBox)
+        self.checkBoxAutoDone.setObjectName(u"checkBoxAutoDone")
+
+        self.formLayout.setWidget(1, QFormLayout.FieldRole, self.checkBoxAutoDone)
+
+        self.labelAutoDone = QLabel(self.configGroupBox)
+        self.labelAutoDone.setObjectName(u"labelAutoDone")
+
+        self.formLayout.setWidget(1, QFormLayout.LabelRole, self.labelAutoDone)
 
 
         self.gridLayout.addWidget(self.configGroupBox, 0, 0, 1, 1)
@@ -89,6 +99,8 @@ class Ui_ConfigureDialog(object):
         self.labelAutoLoadBackupDocument.setText(QCoreApplication.translate("ConfigureDialog", u"Auto load visualisation document:", None))
         self.checkBoxAutoLoadVisualisationDocument.setText("")
         self.comboBoxVisualisationDocuments.setPlaceholderText(QCoreApplication.translate("ConfigureDialog", u"<new document>", None))
-        self.label.setText(QCoreApplication.translate("ConfigureDialog", u"Visualisation document:", None))
+        self.labelVisualisationDocument.setText(QCoreApplication.translate("ConfigureDialog", u"Visualisation document:", None))
+        self.checkBoxAutoDone.setText("")
+        self.labelAutoDone.setText(QCoreApplication.translate("ConfigureDialog", u"Auto done:", None))
     # retranslateUi
 

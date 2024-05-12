@@ -129,8 +129,8 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
         self._dock_widgets.append(editor)
 
     def _makeConnections(self):
-        self._ui.pushButtonDocumentation.clicked.connect(self._documentationButtonClicked)
-        self._ui.pushButtonDone.clicked.connect(self._doneButtonClicked)
+        self._ui.pushButtonDocumentation.clicked.connect(self._documentation_button_clicked)
+        self._ui.pushButtonDone.clicked.connect(self._done_button_clicked)
         self._ui.viewTabWidget.tabCloseRequested.connect(self._viewTabCloseRequested)
         self._ui.viewTabWidget.currentChanged.connect(self._currentViewChanged)
         tab_bar = self._ui.viewTabWidget.tabBar()
@@ -411,15 +411,19 @@ class ArgonViewerWidget(QtWidgets.QMainWindow):
             w = self._create_new_view(new_view, view_manager.getZincContext())
             self._ui.viewTabWidget.setCurrentWidget(w)
 
-    def _documentationButtonClicked(self):
+    @staticmethod
+    def _documentation_button_clicked():
         webbrowser.open("https://abi-mapping-tools.readthedocs.io/en/latest/mapclientplugins.argonviewerstep/docs/index.html")
 
-    def _doneButtonClicked(self):
+    def auto_done_requested(self):
+        self._done_button_clicked(auto_done=True)
+
+    def _done_button_clicked(self, checked=False, auto_done=False):
         QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.CursorShape.WaitCursor)
         try:
             document = self._model.getDocument()
             view_manager = document.getViewManager()
-            if view_manager.viewCount():
+            if view_manager.viewCount() and not auto_done:
                 self._ui.viewTabWidget.blockSignals(True)
                 for index in range(self._ui.viewTabWidget.count()):
                     self._ui.viewTabWidget.setCurrentIndex(index)

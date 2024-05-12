@@ -17,10 +17,10 @@
    <item row="1" column="0">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+      <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Ok</set>
      </property>
     </widget>
    </item>
@@ -40,14 +40,14 @@
       <item row="0" column="1">
        <widget class="QLineEdit" name="lineEditIdentifier"/>
       </item>
-      <item row="1" column="0">
+      <item row="2" column="0">
        <widget class="QLabel" name="labelAutoLoadBackupDocument">
         <property name="text">
          <string>Auto load visualisation document:</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="1">
+      <item row="2" column="1">
        <widget class="QCheckBox" name="checkBoxAutoLoadVisualisationDocument">
         <property name="text">
          <string/>
@@ -57,23 +57,37 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="1">
+      <item row="3" column="1">
        <widget class="QComboBox" name="comboBoxVisualisationDocuments">
         <property name="editable">
          <bool>true</bool>
         </property>
         <property name="insertPolicy">
-         <enum>QComboBox::InsertAtCurrent</enum>
+         <enum>QComboBox::InsertPolicy::InsertAtCurrent</enum>
         </property>
         <property name="placeholderText">
          <string>&lt;new document&gt;</string>
         </property>
        </widget>
       </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="label">
+      <item row="3" column="0">
+       <widget class="QLabel" name="labelVisualisationDocument">
         <property name="text">
          <string>Visualisation document:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QCheckBox" name="checkBoxAutoDone">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="labelAutoDone">
+        <property name="text">
+         <string>Auto done:</string>
         </property>
        </widget>
       </item>

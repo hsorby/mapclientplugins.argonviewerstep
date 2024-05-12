@@ -40,6 +40,7 @@ class ArgonViewerStep(WorkflowStepMountPoint):
             'identifier': '',
             'auto-load-visualisation-doc': True,
             'visualisation-doc': '',
+            'auto-done': False,
         }
 
         # Port data:
@@ -65,7 +66,10 @@ class ArgonViewerStep(WorkflowStepMountPoint):
             self._view.load(self._file_locations, self._config['auto-load-visualisation-doc'])
             self._view.registerUpdateVisualisationDoc(self._update_visualisation_doc)
             self._view.registerDoneExecution(self._doneExecution)
-            self._setCurrentWidget(self._view)
+            if self._config['auto-done']:
+                self._view.auto_done_requested()
+            else:
+                self._setCurrentWidget(self._view)
         finally:
             QtWidgets.QApplication.restoreOverrideCursor()
 

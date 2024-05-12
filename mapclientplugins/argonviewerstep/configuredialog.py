@@ -104,6 +104,7 @@ class ConfigureDialog(QtWidgets.QDialog):
         self._previousIdentifier = self._ui.lineEditIdentifier.text()
         return {
             'identifier': self._ui.lineEditIdentifier.text(),
+            'auto-done': self._ui.checkBoxAutoDone.isChecked(),
             'auto-load-visualisation-doc': self._ui.checkBoxAutoLoadVisualisationDocument.isChecked(),
             'visualisation-doc': self._ui.comboBoxVisualisationDocuments.currentText()
         }
@@ -117,6 +118,7 @@ class ConfigureDialog(QtWidgets.QDialog):
         self._previousIdentifier = config['identifier']
         self._ui.lineEditIdentifier.setText(config['identifier'])
         self._ui.checkBoxAutoLoadVisualisationDocument.setChecked(True if config['auto-load-visualisation-doc'] else False)
+        self._ui.checkBoxAutoDone.setChecked(True if config['auto-done'] else False)
         index = self._ui.comboBoxVisualisationDocuments.findText(config['visualisation-doc'])
         if index >= 0:
             self._ui.comboBoxVisualisationDocuments.blockSignals(True)
