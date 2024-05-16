@@ -49,9 +49,10 @@ class ConfigureDialog(QtWidgets.QDialog):
         line_edit.editingFinished.connect(self._document_name_changed)
 
     def _document_name_changed(self):
-        index = self._ui.comboBoxVisualisationDocuments.currentIndex()
         new_text = self._ui.comboBoxVisualisationDocuments.currentText()
-        self._ui.comboBoxVisualisationDocuments.setItemText(index, new_text)
+        if new_text:
+            index = self._ui.comboBoxVisualisationDocuments.currentIndex()
+            self._ui.comboBoxVisualisationDocuments.setItemText(index, new_text)
 
     def _do_document_name_change(self, old_name, new_name):
         if not os.path.isfile(os.path.join(self._documents_dir, new_name)):
@@ -77,7 +78,6 @@ class ConfigureDialog(QtWidgets.QDialog):
                 items_text.append(self._ui.comboBoxVisualisationDocuments.itemText(r))
 
             for old_text, new_text in zip(self._original_documents, items_text):
-                print(old_text, new_text)
                 if old_text != new_text:
                     self._do_document_name_change(old_text, new_text)
 
