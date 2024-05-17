@@ -163,4 +163,4 @@ class ArgonViewerStep(WorkflowStepMountPoint):
         if self._model is None:
             self._setup_model()
 
-        return [pathlib.PurePath(self._model.getCurrentDocumentLocation()).as_posix()]
+        return [pathlib.PureWindowsPath(self._model.getCurrentDocumentLocation()).as_posix()]
