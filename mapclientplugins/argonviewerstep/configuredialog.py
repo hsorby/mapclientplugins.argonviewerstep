@@ -107,7 +107,7 @@ class ConfigureDialog(QtWidgets.QDialog):
             'identifier': self._ui.lineEditIdentifier.text(),
             'auto-done': self._ui.checkBoxAutoDone.isChecked(),
             'auto-load-visualisation-doc': self._ui.checkBoxAutoLoadVisualisationDocument.isChecked(),
-            'visualisation-doc': pathlib.PurePath(self._ui.comboBoxVisualisationDocuments.currentText()).as_posix()
+            'visualisation-doc': pathlib.PureWindowsPath(self._ui.comboBoxVisualisationDocuments.currentText()).as_posix()
         }
 
     def setConfig(self, config):
