@@ -1,5 +1,4 @@
 import os
-import pathlib
 import webbrowser
 
 from PySide6 import QtCore, QtWidgets
@@ -107,7 +106,7 @@ class ConfigureDialog(QtWidgets.QDialog):
             'identifier': self._ui.lineEditIdentifier.text(),
             'auto-done': self._ui.checkBoxAutoDone.isChecked(),
             'auto-load-visualisation-doc': self._ui.checkBoxAutoLoadVisualisationDocument.isChecked(),
-            'visualisation-doc': pathlib.PureWindowsPath(self._ui.comboBoxVisualisationDocuments.currentText()).as_posix()
+            'visualisation-doc': self._ui.comboBoxVisualisationDocuments.currentText()
         }
 
     def setConfig(self, config):
