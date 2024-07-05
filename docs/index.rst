@@ -59,7 +59,7 @@ It includes:
 10. Logger Editor Widget;
 11. Console Editor Widget.
 
-Detailed documentation on each of these widgets can be found at `Zinc Widgets Documentation <https://abi-mapping-tools.readthedocs.io/en/latest/opencmiss.zincwidgets/docs/index.html>`_.
+Detailed documentation on each of these widgets can be found at `Zinc Widgets Documentation <https://abi-mapping-tools.readthedocs.io/en/latest/cmlibs.widgets/docs/index.html>`_.
 
 Install
 -------
